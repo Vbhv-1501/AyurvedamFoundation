@@ -86,15 +86,11 @@ export default function MediaExperience() {
               } else if (word) {
                 const wordSpan = document.createElement("span");
                 wordSpan.className = "word";
-                wordSpan.style.display = "inline-block";
-                wordSpan.style.overflow = "hidden";
-                wordSpan.style.verticalAlign = "top";
                 
                 const chars = Array.from(word);
                 chars.forEach(char => {
                   const charSpan = document.createElement("span");
                   charSpan.className = "char";
-                  charSpan.style.display = "inline-block";
                   charSpan.textContent = char;
                   wordSpan.appendChild(charSpan);
                 });

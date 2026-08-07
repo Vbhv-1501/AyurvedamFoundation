@@ -941,10 +941,12 @@ div:not([class*="icon"]):not([class*="fa"]):not([class*="eicon"]):not(.fa) {
    EFFECT 1: Split-Text Scroll Reveal (Headings Animation)
    ======================================================== */
 .word {
-  display: inline-block;
-  overflow: hidden;
-  vertical-align: top;
-  white-space: nowrap;
+  display: inline-block !important;
+  overflow: hidden !important;
+  vertical-align: bottom !important;
+  white-space: nowrap !important;
+  padding: 0.15em 0.15em 0.35em 0.15em !important;
+  margin: -0.15em -0.15em -0.35em -0.15em !important;
 }
 
 .char {
