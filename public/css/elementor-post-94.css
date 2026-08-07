@@ -1,0 +1,96 @@
+.elementor-94 .elementor-element.elementor-element-ea7c7c0{--display:flex;--flex-direction:column;--container-widget-width:100%;--container-widget-height:initial;--container-widget-flex-grow:0;--container-widget-align-self:initial;--flex-wrap-mobile:wrap;--padding-top:0px;--padding-bottom:0px;--padding-left:0px;--padding-right:0px;}.elementor-94 .elementor-element.elementor-element-5d338fbd iframe{height:314px;}/* Start custom CSS *//* =========================================================
+   FIX FOR CONTACT CARDS OVERLAP & STYLING (Elementor ID 94)
+========================================================= */
+
+/* 1. Force the container into a responsive Grid (Fixes the overlapping/cut-off issue) */
+.elementor-94 .elementor-element-3fb88b7d .elementor-container {
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 30px !important;
+    width: 100% !important;
+    max-width: 1200px !important;
+    margin: 0 auto !important;
+    padding: 20px !important;
+}
+
+/* 2. Outer Pink Box (Targeting the Elementor Columns) */
+.elementor-94 .elementor-element-3fb88b7d .elementor-column {
+    width: 100% !important;
+    background-color: #F2D1D4 !important; /* Soft pink background from your image */
+    border-radius: 30px !important;
+    padding: 15px !important; /* Thickness of the pink frame */
+    display: flex !important;
+}
+
+.elementor-94 .elementor-element-3fb88b7d .elementor-widget-wrap {
+    width: 100% !important;
+}
+
+/* 3. Inner White Card (Targeting the Icon Box) */
+.elementor-94 .elementor-element-3fb88b7d .elementor-widget-icon-box {
+    background-color: #ffffff !important;
+    border-radius: 20px !important;
+    padding: 40px 20px !important;
+    height: 100% !important;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.05) !important;
+    border: none !important;
+    text-align: center !important;
+    margin: 0 !important;
+}
+
+/* 4. Rounded Icon Styling */
+.elementor-94 .elementor-element-3fb88b7d .elementor-icon-box-icon {
+    margin-bottom: 25px !important;
+}
+
+.elementor-94 .elementor-element-3fb88b7d .elementor-icon {
+    background-color: #FDF1F1 !important; /* Very light pink inside icon box */
+    width: 75px !important;
+    height: 75px !important;
+    border-radius: 20px !important; /* Rounded square from your image */
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    color: #F2654A !important; /* Orange/Red icon color */
+    border: 1px solid rgba(242, 101, 74, 0.3) !important;
+    font-size: 28px !important;
+}
+
+/* 5. Typography Fixes (Matching your image) */
+.elementor-94 .elementor-element-3fb88b7d .elementor-icon-box-title span {
+    font-family: 'Fraunces', serif !important;
+    color: #5A122D !important; /* Deep Maroon title */
+    font-size: 20px !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    line-height: 1.4 !important;
+}
+
+.elementor-94 .elementor-element-3fb88b7d .elementor-icon-box-description {
+    color: #111111 !important;
+    font-size: 15px !important;
+    font-weight: 600 !important;
+    line-height: 1.8 !important;
+    margin-top: 15px !important;
+}
+
+/* Make phone numbers and emails pink like in the image */
+.elementor-94 .elementor-element-3fb88b7d .elementor-icon-box-description b,
+.elementor-94 .elementor-element-3fb88b7d .elementor-icon-box-description a {
+    color: #C51152 !important;
+    font-weight: 700 !important;
+    text-decoration: none !important;
+}
+
+/* 6. Mobile Responsiveness */
+@media (max-width: 1024px) {
+    .elementor-94 .elementor-element-3fb88b7d .elementor-container {
+        grid-template-columns: repeat(2, 1fr) !important; /* 2 cards per row on tablets */
+    }
+}
+
+@media (max-width: 768px) {
+    .elementor-94 .elementor-element-3fb88b7d .elementor-container {
+        grid-template-columns: 1fr !important; /* 1 card per row on phones */
+    }
+}/* End custom CSS */
