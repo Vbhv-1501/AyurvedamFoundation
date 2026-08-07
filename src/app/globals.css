@@ -844,7 +844,7 @@ body::before { content: ""; position: fixed; inset: 0; pointer-events: none; z-i
 }
 .elementor-page-88 .ay-scroll-gallery { position: relative; min-height: 205vh; overflow: clip; background: #fffaf2; }
 .elementor-page-88 .ay-scroll-copy { position: absolute; z-index: 3; top: clamp(40px, 9vw, 118px); left: max(28px, calc((100% - 1220px) / 2)); max-width: 510px; color: #421327; }
-.elementor-page-88 .ay-scroll-copy span { display: block; color: #a76f33; font: 700 11px "Jost", sans-serif; letter-spacing: .16em; text-transform: uppercase; }
+.elementor-page-88 .ay-scroll-copy > span { display: block; color: #a76f33; font: 700 11px "Jost", sans-serif; letter-spacing: .16em; text-transform: uppercase; }
 .elementor-page-88 .ay-scroll-copy h2 { margin: 15px 0; font: 500 clamp(2.8rem, 5.4vw, 5.8rem)/.9 "Cormorant Garamond", serif; letter-spacing: -.05em; }
 .elementor-page-88 .ay-scroll-copy h2 em { color: #9e174d; font-weight: 500; }
 .elementor-page-88 .ay-scroll-copy p { max-width: 400px; font: 400 16px/1.65 "Jost", sans-serif; color: #6f5360; }
