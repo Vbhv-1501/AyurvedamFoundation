@@ -101,7 +101,7 @@ export default function MediaExperience() {
             child.parentNode?.replaceChild(fragment, child);
           } else if (child.nodeType === Node.ELEMENT_NODE) {
             const el = child as HTMLElement;
-            if (!el.classList.contains("no-split") && !el.classList.contains("char") && !el.classList.contains("word")) {
+            if (!el.classList.contains("no-split") && !el.classList.contains("char") && !el.classList.contains("word") && !el.classList.contains("accent-script")) {
               splitNode(child);
             }
           }
@@ -126,6 +126,22 @@ export default function MediaExperience() {
         chars.forEach((char, index) => {
           char.style.setProperty("--char-delay", `${index * 18}ms`);
           char.style.transitionDelay = `${index * 18}ms`;
+        });
+
+        // Stagger delay for accent script elements inside the heading
+        const accents = heading.querySelectorAll<HTMLElement>(".accent-script");
+        accents.forEach((accent) => {
+          let charsBefore = 0;
+          let sibling = accent.previousSibling;
+          while (sibling) {
+            if (sibling.nodeType === Node.ELEMENT_NODE) {
+              charsBefore += (sibling as HTMLElement).querySelectorAll(".char").length;
+            } else if (sibling.nodeType === Node.TEXT_NODE) {
+              charsBefore += (sibling.textContent || "").trim().length;
+            }
+            sibling = sibling.previousSibling;
+          }
+          accent.style.transitionDelay = `${charsBefore * 18}ms`;
         });
 
         headingObserver.observe(heading);

@@ -979,3 +979,26 @@ div:not([class*="icon"]):not([class*="fa"]):not([class*="eicon"]):not(.fa) {
   display: inline-block;
   will-change: content;
 }
+
+/* Custom reveal transition for accent scripts (like cursive headings) as a whole word */
+.accent-script {
+  display: inline-block !important;
+  transform: translateY(60%) rotate(2deg);
+  opacity: 0;
+  transition: transform 0.7s cubic-bezier(.2, .9, .25, 1), opacity 0.7s cubic-bezier(.2, .9, .25, 1);
+  will-change: transform, opacity;
+}
+
+.in-view .accent-script,
+.in-view.accent-script {
+  transform: translateY(0) rotate(0deg) !important;
+  opacity: 1 !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .accent-script {
+    transform: none !important;
+    opacity: 1 !important;
+    transition: none !important;
+  }
+}
