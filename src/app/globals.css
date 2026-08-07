@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 @import "tailwindcss";
 
 /* Show Elementor nav menu dropdown sub-menus on hover */
@@ -889,3 +890,25 @@ body::before { content: ""; position: fixed; inset: 0; pointer-events: none; z-i
 .elementor-page-88 .ay-scroll-stage { overflow: visible !important; }
 body:has(.elementor-page-88) .elementor-location-footer,
 .elementor-page-88 + .elementor-location-footer { margin-top: 0 !important; }
+
+/* Force Inter on everything except icon font classes and custom SVGs */
+html, body, p, h1, h2, h3, h4, h5, h6, li, button, input, select, textarea,
+span:not([class*="icon"]):not([class*="fa"]):not([class*="eicon"]):not(.fa),
+a:not([class*="icon"]):not([class*="fa"]):not([class*="eicon"]):not(.fa),
+div:not([class*="icon"]):not([class*="fa"]):not([class*="eicon"]):not(.fa) {
+  font-family: 'Inter', sans-serif !important;
+}
+
+/* Explicitly protect icon fonts from being overridden by the Inter rule above */
+.ekiticons, .elementor-icons-ekiticons {
+  font-family: 'ekiticons' !important;
+}
+.fa, .fas, .far, .fab, [class^="fa-"], [class*=" fa-"] {
+  font-family: 'Font Awesome 5 Free', 'Font Awesome 5 Brands', 'FontAwesome', sans-serif !important;
+}
+[class^="eicon-"], [class*=" eicon-"] {
+  font-family: 'Elementor' !important;
+}
+.etn-icon {
+  font-family: 'etn-icon' !important;
+}
