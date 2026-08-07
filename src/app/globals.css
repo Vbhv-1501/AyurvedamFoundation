@@ -936,3 +936,44 @@ div:not([class*="icon"]):not([class*="fa"]):not([class*="eicon"]):not(.fa) {
 .elementor-location-footer .elementor-social-icon:hover svg {
   transform: scale(1.18) !important;
 }
+
+/* ========================================================
+   EFFECT 1: Split-Text Scroll Reveal (Headings Animation)
+   ======================================================== */
+.word {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: top;
+  white-space: nowrap;
+}
+
+.char {
+  display: inline-block;
+  transform: translateY(120%) rotate(6deg);
+  opacity: 0;
+  transition: transform 0.7s cubic-bezier(.2, .9, .25, 1), opacity 0.7s cubic-bezier(.2, .9, .25, 1);
+  will-change: transform, opacity;
+}
+
+/* Activated state when heading scrolls into view */
+.in-view .char {
+  transform: translateY(0) rotate(0deg) !important;
+  opacity: 1 !important;
+}
+
+/* Support prefers-reduced-motion to skip animations */
+@media (prefers-reduced-motion: reduce) {
+  .char {
+    transform: none !important;
+    opacity: 1 !important;
+    transition: none !important;
+  }
+}
+
+/* ========================================================
+   EFFECT 2: Count-Up Number Animation
+   ======================================================== */
+.counter-num {
+  display: inline-block;
+  will-change: content;
+}
