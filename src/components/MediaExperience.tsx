@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 
 const fallbackImages = [
   "/uploads/2026/06/043A6536-scaled.webp", "/uploads/2026/06/043A6543-scaled.webp",
@@ -14,12 +15,37 @@ const fallbackImages = [
 export default function MediaExperience() {
   const [active, setActive] = useState<number | null>(null);
   const [images, setImages] = useState(fallbackImages);
+  const pathname = usePathname();
 
   useEffect(() => {
-    const page = window.location.pathname.replace(/\/$/, "");
+    const page = pathname.replace(/\/$/, "");
+    
+    // Format footer phone numbers
     document.querySelectorAll<HTMLElement>(".elementor-location-footer .elementor-icon-list-text").forEach((item) => {
       if (item.textContent?.includes("63910 53105") && item.textContent.includes("8318714809")) {
         item.innerHTML = "+91 63910 53105<br>+91 8318714809";
+      }
+    });
+
+    // Replace footer social icons with premium full-color brand logos
+    const facebookSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="#1877F2" d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>`;
+    const youtubeSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="#FF0000" d="M23.498 6.163a3.003 3.003 0 0 0-2.11-2.108C19.524 3.545 12 3.545 12 3.545s-7.525 0-9.388.51a3.003 3.003 0 0 0-2.11 2.108C0 8.029 0 12 0 12s0 3.972.502 5.837a3.003 3.003 0 0 0 2.11 2.108c1.863.51 9.388.51 9.388.51s7.524 0 9.388-.51a3.003 3.003 0 0 0 2.11-2.108c.502-1.865.502-5.837.502-5.837s0-3.971-.502-5.837z"/><polygon fill="#FFFFFF" points="9.545 15.568 15.818 12 9.545 8.432"/></svg>`;
+    const instagramSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><defs><radialGradient id="ig-grad" cx="30%" cy="107%" r="130%"><stop offset="0%" stop-color="#fdf497"/><stop offset="5%" stop-color="#fdf497"/><stop offset="45%" stop-color="#fd5949"/><stop offset="60%" stop-color="#d6249f"/><stop offset="90%" stop-color="#285AEB"/></radialGradient></defs><rect width="24" height="24" rx="5" fill="url(#ig-grad)"/><path fill="#FFFFFF" d="M12 5.9c2.02 0 2.26.01 3.06.04 2.1.1 2.9 1 3 3 .03.8.04 1.04.04 3.06s-.01 2.26-.04 3.06c-.1 2.1-1 2.9-3 3-.8.03-1.04.04-3.06.04s-2.26-.01-3.06-.04c-2.1-.1-2.9-1-3-3-.03-.8-.04-1.04-.04-3.06s.01-2.26.04-3.06c.1-2.1 1-2.9 3-3 .8-.03 1.04-.04 3.06-.04M12 4.5c-2.05 0-2.31.01-3.12.05-2.9.13-4.5 1.73-4.63 4.63-.04.81-.05 1.07-.05 3.12s.01 2.31.05 3.12c.13 2.9 1.73 4.5 4.63 4.63.81.04 1.07.05 3.12.05s2.31-.01 3.12-.05c2.9-.13 4.5-1.73 4.63-4.63.04-.81.05-1.07.05-3.12s-.01-2.31-.05-3.12c-.13-2.9-1.73-4.5-4.63-4.63-.81-.04-1.07-.05-3.12-.05z"/><path fill="#FFFFFF" d="M12 8.12a3.88 3.88 0 1 0 3.88 3.88A3.88 3.88 0 0 0 12 8.12zm0 6.36a2.48 2.48 0 1 1 2.48-2.48 2.48 2.48 0 0 1-2.48 2.48z"/><circle fill="#FFFFFF" cx="16.9" cy="7.1" r="0.9"/></svg>`;
+    const linkedinSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="#0A66C2" d="M22.223 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0z"/><path fill="#FFFFFF" d="M7.12 20.452h-3.56V9.002h3.56v11.45zM5.34 7.433c-1.137 0-2.06-.924-2.06-2.063a2.063 2.063 0 1 1 4.12 0c0 1.139-.922 2.063-2.06 2.063zM20.451 20.452h-3.553v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.359V9.002h3.41v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286z"/></svg>`;
+
+    document.querySelectorAll<HTMLElement>(".elementor-location-footer a.elementor-social-icon").forEach((a) => {
+      const spanText = a.querySelector(".elementor-screen-only")?.textContent?.toLowerCase() || "";
+      const svgEl = a.querySelector("svg");
+      if (svgEl) {
+        if (a.classList.contains("elementor-social-icon-facebook") || a.classList.contains("elementor-social-icon-facebook-f") || spanText.includes("facebook")) {
+          svgEl.outerHTML = facebookSvg;
+        } else if (a.classList.contains("elementor-social-icon-youtube") || spanText.includes("youtube")) {
+          svgEl.outerHTML = youtubeSvg;
+        } else if (a.classList.contains("elementor-social-icon-instagram") || spanText.includes("instagram")) {
+          svgEl.outerHTML = instagramSvg;
+        } else if (a.classList.contains("elementor-social-icon-linkedin") || spanText.includes("linkedin")) {
+          svgEl.outerHTML = linkedinSvg;
+        }
       }
     });
     if (page === "/images") {
@@ -84,7 +110,7 @@ export default function MediaExperience() {
         mount.innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${source}?rel=0&modestbranding=1" title="Ayurvedam Foundation video" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>`;
       });
     }
-  }, []);
+  }, [pathname]);
 
   useEffect(() => {
     if (active === null) return;

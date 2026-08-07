@@ -912,3 +912,27 @@ div:not([class*="icon"]):not([class*="fa"]):not([class*="eicon"]):not(.fa) {
 .etn-icon {
   font-family: 'etn-icon' !important;
 }
+
+/* Premium colorful social logos in the footer */
+.elementor-location-footer .elementor-social-icon {
+  background-color: transparent !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  width: auto !important;
+  height: auto !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  margin-right: 14px !important;
+}
+
+.elementor-location-footer .elementor-social-icon svg {
+  fill: initial !important;
+  width: 32px !important;
+  height: 32px !important;
+  transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+}
+
+.elementor-location-footer .elementor-social-icon:hover svg {
+  transform: scale(1.18) !important;
+}
