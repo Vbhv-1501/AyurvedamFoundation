@@ -53,7 +53,7 @@ export default function MediaExperience() {
     // EFFECT 1 & 2: Scroll-triggered effects
     const initAnimations = () => {
       // Setup Headings (Split-Text Reveal)
-      const headings = document.querySelectorAll<HTMLElement>("h1, h2, h3, h4, h5");
+      const headings = document.querySelectorAll<HTMLElement>("h1, h2, h3");
       const headingObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
           if (entry.isIntersecting) {
@@ -393,9 +393,31 @@ export default function MediaExperience() {
       }
     }
 
+    // Static page ticket modal toggling (specifically homepage)
+    const handleTicketModal = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      const overlay = document.getElementById("ticketModalOverlay");
+      if (!overlay) return;
+
+      if (target.closest(".openTicketModalBtn")) {
+        e.preventDefault();
+        overlay.classList.add("active");
+        document.body.style.overflow = "hidden";
+      }
+
+      if (target.closest("#closeTicketModalBtn") || target === overlay) {
+        e.preventDefault();
+        overlay.classList.remove("active");
+        document.body.style.removeProperty("overflow");
+      }
+    };
+
+    document.addEventListener("click", handleTicketModal);
+
     return () => {
       clearTimeout(t1);
       clearTimeout(t2);
+      document.removeEventListener("click", handleTicketModal);
       if (imagesCleanup) imagesCleanup();
     };
   }, [pathname]);
