@@ -417,8 +417,8 @@ img:is([sizes=auto i],[sizes^="auto," i]){contain-intrinsic-size:3000px 1500px}
     transform: translate(-50%, -50%); border: 0; 
     opacity: 0; transition: opacity 1.5s ease; pointer-events: none; 
   }
-  .ayurvedam-home-content .hero-media .hero-video-frame.is-ready { opacity: 0.35; }
-  .ayurvedam-home-content .hero-media::after { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(20,5,8,0.88) 0%, rgba(110,26,61,0.6) 100%); z-index: 1; }
+  .ayurvedam-home-content .hero-media .hero-video-frame.is-ready { opacity: 0.7; }
+  .ayurvedam-home-content .hero-media::after { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(20,5,8,0.75) 0%, rgba(110,26,61,0.45) 100%); z-index: 1; }
   
   .ayurvedam-home-content .hero-top, .ayurvedam-home-content .hero-grid, .ayurvedam-home-content .highlight-strip { position: relative; z-index: 2; }
   .ayurvedam-home-content .hero-top { max-width: 1200px; margin: 0 auto; padding: 0 32px; width: 100%; text-align: left;}

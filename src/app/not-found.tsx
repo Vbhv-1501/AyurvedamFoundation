@@ -30,7 +30,7 @@ export default function NotFound() {
           content: '';
           position: absolute;
           inset: 0;
-          background: linear-gradient(135deg, rgba(20,5,8,0.94) 0%, rgba(110,26,61,0.7) 100%);
+          background: linear-gradient(135deg, rgba(20,5,8,0.75) 0%, rgba(110,26,61,0.45) 100%);
           z-index: 1;
         }
 
@@ -50,7 +50,7 @@ export default function NotFound() {
         }
 
         .not-found-hero .hero-video-frame.is-ready {
-          opacity: 0.35;
+          opacity: 0.7;
         }
 
         .not-found-hero img.hero-poster {
