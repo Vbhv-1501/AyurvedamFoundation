@@ -12,26 +12,31 @@ export default function HeaderRevealInit() {
     const processHeadings = () => {
       const headings = document.querySelectorAll<HTMLElement>("h1, h2, h3");
       headings.forEach((heading) => {
-        // Exclude header, nav, footer, and other elements explicitly marked no-split
+        // Exclude header, nav, footer, and other layouts/explicit exclusions
         if (heading.closest("header, nav, footer, .elementor-location-header, .elementor-location-footer, .no-split")) {
           return;
         }
 
-        // Avoid double processing
-        if (heading.getAttribute("data-text-reveal-initialized")) {
+        // Avoid double processing, but re-run if React's virtual DOM reconciliation 
+        // overwrote our changes and deleted the text-reveal-wrapper child.
+        const isInitialized = heading.getAttribute("data-text-reveal-initialized");
+        const hasWrapper = heading.querySelector(".text-reveal-wrapper");
+        if (isInitialized && hasWrapper) {
           return;
         }
+
         heading.setAttribute("data-text-reveal-initialized", "true");
 
+        // Keep a copy of the original text content (if React restored it, or read from textContent)
         const text = heading.innerText || heading.textContent || "";
-        if (!text.trim()) return;
+        if (!text.trim() || text.includes("Ayurved Yashobhoomi 2026 begins in:")) return;
 
         // Render TextReveal as a span inside the heading
         // This preserves the heading element container and all its original styling/classes
         const container = document.createElement("span");
         container.className = "inline-block w-full text-reveal-wrapper";
         
-        // We clear the inner text and append our container
+        // Clear inner HTML and append container
         heading.innerHTML = "";
         heading.appendChild(container);
 
@@ -62,6 +67,7 @@ export default function HeaderRevealInit() {
     observer.observe(document.body, {
       childList: true,
       subtree: true,
+      characterData: true,
     });
 
     // Rerun on pathname change

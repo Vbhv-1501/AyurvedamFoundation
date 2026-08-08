@@ -220,7 +220,8 @@ export function TextReveal({
     <AnimatePresence mode="popLayout">
       {trigger && (
         <MotionTag
-          animate="visible"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.15 }}
           className={className}
           exit="exit"
           initial="hidden"
