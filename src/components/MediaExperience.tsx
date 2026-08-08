@@ -370,6 +370,29 @@ export default function MediaExperience() {
       });
     }
 
+    // Dynamic background video injection for hero section
+    const heroMedia = document.getElementById("heroVideoMedia");
+    if (heroMedia) {
+      const ytId = heroMedia.dataset.ytId || "q44gsv3ooKI";
+      if (!heroMedia.querySelector("iframe")) {
+        const iframe = document.createElement("iframe");
+        iframe.className = "hero-video-frame";
+        iframe.src = `https://www.youtube-nocookie.com/embed/${ytId}?autoplay=1&mute=1&loop=1&controls=0&playsinline=1&modestbranding=1&rel=0&showinfo=0&start=6&playlist=${ytId}`;
+        iframe.title = "Ayurvedam Foundation hero background video";
+        iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
+        iframe.allowFullscreen = true;
+        
+        iframe.onload = () => {
+          iframe.classList.add("is-ready");
+        };
+        heroMedia.appendChild(iframe);
+        
+        setTimeout(() => {
+          iframe.classList.add("is-ready");
+        }, 800);
+      }
+    }
+
     return () => {
       clearTimeout(t1);
       clearTimeout(t2);
