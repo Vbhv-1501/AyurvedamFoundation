@@ -9,11 +9,10 @@ export default function HeaderRevealInit() {
   const pathname = usePathname();
 
   useEffect(() => {
-    // Run after a slight delay to ensure dynamic pages/dangerouslySetInnerHTML are loaded
-    const timer = setTimeout(() => {
+    const processHeadings = () => {
       const headings = document.querySelectorAll<HTMLElement>("h1, h2, h3");
       headings.forEach((heading) => {
-        // Exclude header, nav, footer, and other UI sections that shouldn't animate
+        // Exclude header, nav, footer, and other elements explicitly marked no-split
         if (heading.closest("header, nav, footer, .elementor-location-header, .elementor-location-footer, .no-split")) {
           return;
         }
@@ -32,7 +31,7 @@ export default function HeaderRevealInit() {
         const container = document.createElement("span");
         container.className = "inline-block w-full text-reveal-wrapper";
         
-        // We clear the inner content and append our container
+        // We clear the inner text and append our container
         heading.innerHTML = "";
         heading.appendChild(container);
 
@@ -48,9 +47,28 @@ export default function HeaderRevealInit() {
           </TextReveal>
         );
       });
-    }, 150);
+    };
 
-    return () => clearTimeout(timer);
+    // Run initially
+    processHeadings();
+
+    // Create a MutationObserver with requestAnimationFrame throttling to capture dynamically loaded content (e.g. from dangerouslySetInnerHTML)
+    let frameId: number;
+    const observer = new MutationObserver(() => {
+      cancelAnimationFrame(frameId);
+      frameId = requestAnimationFrame(processHeadings);
+    });
+
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true,
+    });
+
+    // Rerun on pathname change
+    return () => {
+      cancelAnimationFrame(frameId);
+      observer.disconnect();
+    };
   }, [pathname]);
 
   return null;

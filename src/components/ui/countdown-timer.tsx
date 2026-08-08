@@ -24,10 +24,10 @@ export default function ShiftingCountdown() {
       
       <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6 relative z-10">
         <div className="text-center md:text-left flex-1">
-          <span className="font-mono text-xs uppercase tracking-[0.2em] text-[#C98A2A] font-semibold block mb-1">
+          <span className="font-mono text-xs uppercase tracking-[0.2em] text-[#C98A2A] font-semibold block mb-1 no-split">
             Event Countdown
           </span>
-          <h3 className="font-serif text-xl md:text-2xl font-bold text-[#FCF5F0]">
+          <h3 className="font-serif text-xl md:text-2xl font-bold text-white no-split">
             Ayurved Yashobhoomi 2026 begins in:
           </h3>
         </div>
