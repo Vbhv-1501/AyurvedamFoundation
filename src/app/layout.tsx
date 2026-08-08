@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import ParallaxMotion from "@/components/ParallaxMotion";
 import MediaExperience from "@/components/MediaExperience";
+import HeaderRevealInit from "@/components/HeaderRevealInit";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -18,6 +19,7 @@ export default function RootLayout({
       <body>
         <ParallaxMotion />
         <MediaExperience />
+        <HeaderRevealInit />
         {children}
       </body>
     </html>

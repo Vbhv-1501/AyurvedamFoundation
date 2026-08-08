@@ -108,44 +108,7 @@ export default function MediaExperience() {
         });
       };
 
-      headings.forEach((heading) => {
-        // Exclude header, nav, footer, and .no-split
-        if (heading.closest("header, nav, .elementor-location-header, .elementor-location-footer, .no-split")) {
-          return;
-        }
-        // Avoid double splitting
-        if (heading.querySelector(".char") || heading.classList.contains("in-view")) {
-          return;
-        }
-
-        // Apply splitting
-        splitNode(heading);
-
-        // Stagger delays
-        const chars = heading.querySelectorAll<HTMLElement>(".char");
-        chars.forEach((char, index) => {
-          char.style.setProperty("--char-delay", `${index * 18}ms`);
-          char.style.transitionDelay = `${index * 18}ms`;
-        });
-
-        // Stagger delay for accent script elements inside the heading
-        const accents = heading.querySelectorAll<HTMLElement>(".accent-script");
-        accents.forEach((accent) => {
-          let charsBefore = 0;
-          let sibling = accent.previousSibling;
-          while (sibling) {
-            if (sibling.nodeType === Node.ELEMENT_NODE) {
-              charsBefore += (sibling as HTMLElement).querySelectorAll(".char").length;
-            } else if (sibling.nodeType === Node.TEXT_NODE) {
-              charsBefore += (sibling.textContent || "").trim().length;
-            }
-            sibling = sibling.previousSibling;
-          }
-          accent.style.transitionDelay = `${charsBefore * 18}ms`;
-        });
-
-        headingObserver.observe(heading);
-      });
+      // Headings animation handled by TextReveal component inside HeaderRevealInit
 
       // Setup Counters (Count-up)
       // Parse .sis-counter elements
