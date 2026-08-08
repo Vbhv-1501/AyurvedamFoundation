@@ -1,4 +1,5 @@
 import BodyClassManager from '@/components/BodyClassManager';
+import ShiftingCountdown from '@/components/ui/countdown-timer';
 
 export const metadata = {
   title: "Ayurvedam Foundation – A Unit of Indudevi Charitable Foundation – Anant Ayurved Ka Maha Utsav",
@@ -1213,6 +1214,15 @@ img:is([sizes=auto i],[sizes^="auto," i]){contain-intrinsic-size:3000px 1500px}
 <div class="hi"><div class="n">20,000+</div><div class="t">Expected Visitors</div></div>
 </div>
 </section>
+</div></div></div></div></div>`
+      }} />
+      <ShiftingCountdown />
+      <div dangerouslySetInnerHTML={{
+        __html: `<div class="elementor elementor-49" data-elementor-id="49" data-elementor-post-type="page" data-elementor-type="wp-page">
+<div class="elementor-element elementor-element-23e7a7f e-con-full e-flex e-con e-parent" data-e-type="container" data-element_type="container" data-id="23e7a7f">
+<div class="elementor-element elementor-element-b7b1ce0 elementor-widget elementor-widget-html" data-e-type="widget" data-element_type="widget" data-id="b7b1ce0" data-widget_type="html.default">
+<div class="elementor-widget-container">
+<div class="ayurvedam-home-content">
 <!-- ABOUT -->
 <section id="about">
 <div class="wrap about-wrap">
@@ -1673,6 +1683,6 @@ img:is([sizes=auto i],[sizes^="auto," i]){contain-intrinsic-size:3000px 1500px}
 </section>
 </footer>`
       }} />
-                                                                                                                            </>
+    </>
   );
 }
