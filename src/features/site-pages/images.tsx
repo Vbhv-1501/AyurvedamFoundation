@@ -1,4 +1,159 @@
+"use client";
+
+import React, { useEffect, useRef } from 'react';
 import BodyClassManager from '@/components/BodyClassManager';
+
+const galleryImages = [
+  "/uploads/2025/03/1F5A4353-scaled.jpg",
+  "/uploads/2025/03/1F5A4602-scaled.jpg",
+  "/uploads/2025/03/1F5A4607-scaled.jpg",
+  "/uploads/2025/03/DSC_7395-scaled.jpg",
+  "/uploads/2025/03/eventum-img39.jpg",
+  "/uploads/2025/03/IMG-20250319-WA0038.jpg",
+  "/uploads/2025/03/IMG-20250319-WA0042.jpg",
+  "/uploads/2025/03/IMG-20250319-WA0040.jpg",
+  "/uploads/2025/03/IMG-20250319-WA0039.jpg",
+  "/uploads/2025/03/eventum-img40.jpg",
+  "/uploads/2025/03/IMG-20250319-WA0043.jpg",
+  "/uploads/2025/03/IMG-20250319-WA0044.jpg",
+  "/uploads/2025/03/IMG-20250319-WA0045.jpg",
+  "/uploads/2025/03/IMG-20250319-WA0046-1.jpg",
+  "/uploads/2025/03/IMG-20250319-WA0059.jpg",
+  "/uploads/2025/03/IMG-20250319-WA0065.jpg",
+  "/uploads/2025/03/IMG-20250319-WA0064.jpg",
+  "/uploads/2025/03/IMG-20250319-WA0063.jpg",
+  "/uploads/2025/03/IMG-20250319-WA0062.jpg",
+  "/uploads/2025/03/IMG-20250319-WA0061-1.jpg",
+  "/uploads/2025/03/IMG-20250319-WA0060-1.jpg",
+  "/uploads/2025/03/IMG-20250319-WA0068.jpg",
+  "/uploads/2025/03/IMG-20250319-WA0067.jpg",
+  "/uploads/2025/03/IMG-20250319-WA0066.jpg",
+  "/uploads/2025/03/IMG-20250319-WA0046-2.jpg",
+  "/uploads/2025/03/IMG-20250319-WA0059-1.jpg",
+  "/uploads/2025/03/IMG-20250319-WA0071.jpg",
+  "/uploads/2025/03/IMG-20250319-WA0072.jpg",
+  "/uploads/2025/03/IMG-20250319-WA0073.jpg",
+  "/uploads/2025/03/IMG-20250319-WA0062-1.jpg",
+  "/uploads/2025/03/IMG-20250319-WA0061-2.jpg",
+  "/uploads/2025/03/IMG-20250319-WA0074.jpg",
+  "/uploads/2025/03/IMG-20250319-WA0077.jpg",
+  "/uploads/2025/03/IMG-20250319-WA0078.jpg",
+  "/uploads/2025/03/IMG-20250319-WA0079-1.jpg",
+  "/uploads/2025/03/IMG-20250319-WA0083.jpg",
+  "/uploads/2025/03/IMG-20250319-WA0084.jpg",
+  "/uploads/2025/03/IMG-20250319-WA0085.jpg"
+];
+
+function GallerySection() {
+  const rootRef = useRef<HTMLDivElement>(null);
+  const gridRef = useRef<HTMLDivElement>(null);
+  const colRefs = useRef<(HTMLDivElement | null)[]>([]);
+
+  useEffect(() => {
+    const root = rootRef.current;
+    const grid = gridRef.current;
+    const cols = colRefs.current.filter(Boolean) as HTMLDivElement[];
+
+    if (!root || !grid || cols.length === 0) return;
+
+    const syncGalleryHeight = () => {
+      const stageHeight = window.innerHeight;
+      const tallestColumn = Math.max(...cols.map((column, index) => column.scrollHeight * (index === 1 ? 1.14 : .925)));
+      const requiredTravel = Math.max(0, tallestColumn - stageHeight * .32);
+      root.style.setProperty("--ay-gallery-height", `${Math.ceil(stageHeight + requiredTravel + 320)}px`);
+    };
+
+    const update = () => {
+      const rect = root.getBoundingClientRect();
+      const range = Math.max(1, rect.height - window.innerHeight);
+      const progress = Math.min(1, Math.max(0, -rect.top / range));
+      const entrance = Math.min(1, progress / .28);
+      
+      grid.style.transform = `translateX(-50%) rotateX(${75 - entrance * 75}deg) scale(${1.2 - entrance * .2})`;
+      
+      cols.forEach((column, index) => {
+        const finalScale = index === 1 ? 1.14 : .925;
+        const travel = Math.max(0, column.scrollHeight * finalScale - window.innerHeight * .32);
+        const offset = index === 1 ? 130 : index === 2 ? -66 : -10;
+        const columnScale = index === 1 ? 1 + progress * .14 : 1 - progress * .075;
+        column.style.transform = `translateY(${offset - progress * travel}px) scale(${columnScale})`;
+      });
+    };
+
+    let frame = 0;
+    const onScroll = () => {
+      if (!frame) {
+        frame = requestAnimationFrame(() => {
+          update();
+          frame = 0;
+        });
+      }
+    };
+
+    const onResize = () => {
+      syncGalleryHeight();
+      update();
+    };
+
+    syncGalleryHeight();
+    update();
+    
+    const t = setTimeout(onResize, 350);
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onResize);
+
+    const observer = new ResizeObserver(onResize);
+    cols.forEach(col => observer.observe(col));
+
+    return () => {
+      clearTimeout(t);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onResize);
+      observer.disconnect();
+      if (frame) cancelAnimationFrame(frame);
+    };
+  }, []);
+
+  const col1 = galleryImages.filter((_, idx) => idx % 3 === 0);
+  const col2 = galleryImages.filter((_, idx) => idx % 3 === 1);
+  const col3 = galleryImages.filter((_, idx) => idx % 3 === 2);
+
+  return (
+    <section ref={rootRef} className="ay-scroll-gallery" aria-label="Ayurvedam Foundation gallery">
+      <div className="ay-scroll-copy">
+        <span>Ayurvedam Foundation archive</span>
+        <h2 className="no-split">Stories of <em>learning,<br/>service &amp; celebration.</em></h2>
+        <p>Scroll through the complete visual record of our shared Ayurvedic journey.</p>
+      </div>
+      <div className="ay-scroll-stage">
+        <div ref={gridRef} className="ay-scroll-grid">
+          <div ref={el => { colRefs.current[0] = el; }} className="ay-scroll-column ay-scroll-column-1">
+            {col1.map((src, idx) => (
+              <a key={idx} className="ay-scroll-image" href={src} data-image-index={idx * 3} aria-label="Open gallery image">
+                <img src={src} alt="Ayurvedam Foundation event moment" loading="lazy" />
+              </a>
+            ))}
+          </div>
+          <div ref={el => { colRefs.current[1] = el; }} className="ay-scroll-column ay-scroll-column-2">
+            {col2.map((src, idx) => (
+              <a key={idx} className="ay-scroll-image" href={src} data-image-index={idx * 3 + 1} aria-label="Open gallery image">
+                <img src={src} alt="Ayurvedam Foundation event moment" loading="lazy" />
+              </a>
+            ))}
+          </div>
+          <div ref={el => { colRefs.current[2] = el; }} className="ay-scroll-column ay-scroll-column-3">
+            {col3.map((src, idx) => (
+              <a key={idx} className="ay-scroll-image" href={src} data-image-index={idx * 3 + 2} aria-label="Open gallery image">
+                <img src={src} alt="Ayurvedam Foundation event moment" loading="lazy" />
+              </a>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
 
 export default function Page() {
   return (
@@ -37,399 +192,7 @@ export default function Page() {
         `
       }} />
       
-            <link rel="stylesheet" id="swiper-bundle-min-css" href="/css/eventin-swiper-bundle.css" media="all" />
-      <link rel="stylesheet" id="etn-blocks-style-css" href="/css/eventin-etn-block-styles.css" media="all" />
-      <link rel="stylesheet" id="woocommerce-layout-css" href="/css/woocommerce-woocommerce-layout.css" media="all" />
-      <link rel="stylesheet" id="woocommerce-smallscreen-css" href="/css/woocommerce-woocommerce-smallscreen.css" media="only screen and (max-width: 768px)" />
-      <link rel="stylesheet" id="woocommerce-general-css" href="/css/woocommerce-woocommerce.css" media="all" />
-      <link rel="stylesheet" id="etn-icon-css" href="/css/eventin-etn-icon.css" media="all" />
-      <link rel="stylesheet" id="etn-public-css-css" href="/css/eventin-event-manager-public-styles.css" media="all" />
-      <link rel="stylesheet" id="hello-elementor-css" href="/css/hello-reset.css" media="all" />
-      <link rel="stylesheet" id="hello-elementor-theme-style-css" href="/css/hello-theme.css" media="all" />
-      <link rel="stylesheet" id="hello-elementor-header-footer-css" href="/css/hello-header-footer.css" media="all" />
-      <link rel="stylesheet" id="elementor-frontend-css" href="/css/elementor-frontend.css" media="all" />
-      <link rel="stylesheet" id="elementor-post-26-css" href="/css/elementor-post-26.css" media="all" />
-      <link rel="stylesheet" id="widget-icon-box-css" href="/css/elementor-widget-icon-box.css" media="all" />
-      <link rel="stylesheet" id="widget-social-icons-css" href="/css/elementor-widget-social-icons.css" media="all" />
-      <link rel="stylesheet" id="e-apple-webkit-css" href="/css/elementor-apple-webkit.css" media="all" />
-      <link rel="stylesheet" id="widget-image-css" href="/css/elementor-widget-image.css" media="all" />
-      <link rel="stylesheet" id="widget-nav-menu-css" href="/css/elementor-pro-widget-nav-menu.css" media="all" />
-      <link rel="stylesheet" id="e-sticky-css" href="/css/elementor-pro-sticky.css" media="all" />
-      <link rel="stylesheet" id="widget-icon-list-css" href="/css/elementor-widget-icon-list.css" media="all" />
-      <link rel="stylesheet" id="widget-heading-css" href="/css/elementor-widget-heading.css" media="all" />
-      <link rel="stylesheet" id="swiper-css" href="/css/elementor-swiper.css" media="all" />
-      <link rel="stylesheet" id="e-swiper-css" href="/css/elementor-e-swiper.css" media="all" />
-      <link rel="stylesheet" id="widget-gallery-css" href="/css/elementor-pro-widget-gallery.css" media="all" />
-      <link rel="stylesheet" id="elementor-gallery-css" href="/css/elementor-e-gallery.css" media="all" />
-      <link rel="stylesheet" id="e-transitions-css" href="/css/elementor-pro-transitions.css" media="all" />
-      <link rel="stylesheet" id="elementor-post-88-css" href="/css/elementor-post-88.css" media="all" />
-      <link rel="stylesheet" id="elementor-post-113-css" href="/css/elementor-post-113.css" media="all" />
-      <link rel="stylesheet" id="elementor-post-166-css" href="/css/elementor-post-166.css" media="all" />
-      <link rel="stylesheet" id="etn-jquery-countdown-css" href="/css/eventin-jquery.countdown.css" media="all" />
-      <link rel="stylesheet" id="etn-public-css" href="/css/eventin-etn-public.css" media="all" />
-      <link rel="stylesheet" id="wp-components-css" href="/css/style-style.css" media="all" />
-      <link rel="stylesheet" id="wp-preferences-css" href="/css/style-style.css" media="all" />
-      <link rel="stylesheet" id="wp-block-editor-css" href="/css/style-style.css" media="all" />
-      <link rel="stylesheet" id="ekit-widget-styles-css" href="/css/ekit-widget-styles.css" media="all" />
-      <link rel="stylesheet" id="ekit-responsive-css" href="/css/ekit-responsive.css" media="all" />
-      <link rel="stylesheet" id="elementor-gf-local-poppins-css" href="/css/elementor-poppins.css" media="all" />
-      <link rel="stylesheet" id="elementor-gf-local-mulish-css" href="/css/elementor-mulish.css" media="all" />
-      <link rel="stylesheet" id="elementor-gf-local-montserrat-css" href="/css/elementor-montserrat.css" media="all" />
-      <link rel="stylesheet" id="elementor-gf-nokora-css" href="https://fonts.googleapis.com/css?family=Nokora:100,100italic,200,200italic,300,300italic,400,400italic,500,500italic,600,600italic,700,700italic,800,800italic,900,900italic&display=swap" media="all" />
-      <link rel="stylesheet" id="elementor-icons-ekiticons-css" href="/css/ekit-ekiticons.css" media="all" />
-      <link rel="stylesheet" id="wc-blocks-style-css" href="/css/woocommerce-wc-blocks.css" media="all" />
-      <style id="wp-img-auto-sizes-contain-inline-css" dangerouslySetInnerHTML={{
-        __html: `
-img:is([sizes=auto i],[sizes^="auto," i]){contain-intrinsic-size:3000px 1500px}
-/*# sourceURL=wp-img-auto-sizes-contain-inline-css */
-`
-      }} />
-      <style id="wp-emoji-styles-inline-css" dangerouslySetInnerHTML={{
-        __html: `
-
-	img.wp-smiley, img.emoji {
-		display: inline !important;
-		border: none !important;
-		box-shadow: none !important;
-		height: 1em !important;
-		width: 1em !important;
-		margin: 0 0.07em !important;
-		vertical-align: -0.1em !important;
-		background: none !important;
-		padding: 0 !important;
-	}
-/*# sourceURL=wp-emoji-styles-inline-css */
-`
-      }} />
-      <style id="global-styles-inline-css" dangerouslySetInnerHTML={{
-        __html: `
-:root{--wp--preset--aspect-ratio--square: 1;--wp--preset--aspect-ratio--4-3: 4/3;--wp--preset--aspect-ratio--3-4: 3/4;--wp--preset--aspect-ratio--3-2: 3/2;--wp--preset--aspect-ratio--2-3: 2/3;--wp--preset--aspect-ratio--16-9: 16/9;--wp--preset--aspect-ratio--9-16: 9/16;--wp--preset--color--black: #000000;--wp--preset--color--cyan-bluish-gray: #abb8c3;--wp--preset--color--white: #ffffff;--wp--preset--color--pale-pink: #f78da7;--wp--preset--color--vivid-red: #cf2e2e;--wp--preset--color--luminous-vivid-orange: #ff6900;--wp--preset--color--luminous-vivid-amber: #fcb900;--wp--preset--color--light-green-cyan: #7bdcb5;--wp--preset--color--vivid-green-cyan: #00d084;--wp--preset--color--pale-cyan-blue: #8ed1fc;--wp--preset--color--vivid-cyan-blue: #0693e3;--wp--preset--color--vivid-purple: #9b51e0;--wp--preset--gradient--vivid-cyan-blue-to-vivid-purple: linear-gradient(135deg,rgb(6,147,227) 0%,rgb(155,81,224) 100%);--wp--preset--gradient--light-green-cyan-to-vivid-green-cyan: linear-gradient(135deg,rgb(122,220,180) 0%,rgb(0,208,130) 100%);--wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange: linear-gradient(135deg,rgb(252,185,0) 0%,rgb(255,105,0) 100%);--wp--preset--gradient--luminous-vivid-orange-to-vivid-red: linear-gradient(135deg,rgb(255,105,0) 0%,rgb(207,46,46) 100%);--wp--preset--gradient--very-light-gray-to-cyan-bluish-gray: linear-gradient(135deg,rgb(238,238,238) 0%,rgb(169,184,195) 100%);--wp--preset--gradient--cool-to-warm-spectrum: linear-gradient(135deg,rgb(74,234,220) 0%,rgb(151,120,209) 20%,rgb(207,42,186) 40%,rgb(238,44,130) 60%,rgb(251,105,98) 80%,rgb(254,248,76) 100%);--wp--preset--gradient--blush-light-purple: linear-gradient(135deg,rgb(255,206,236) 0%,rgb(152,150,240) 100%);--wp--preset--gradient--blush-bordeaux: linear-gradient(135deg,rgb(254,205,165) 0%,rgb(254,45,45) 50%,rgb(107,0,62) 100%);--wp--preset--gradient--luminous-dusk: linear-gradient(135deg,rgb(255,203,112) 0%,rgb(199,81,192) 50%,rgb(65,88,208) 100%);--wp--preset--gradient--pale-ocean: linear-gradient(135deg,rgb(255,245,203) 0%,rgb(182,227,212) 50%,rgb(51,167,181) 100%);--wp--preset--gradient--electric-grass: linear-gradient(135deg,rgb(202,248,128) 0%,rgb(113,206,126) 100%);--wp--preset--gradient--midnight: linear-gradient(135deg,rgb(2,3,129) 0%,rgb(40,116,252) 100%);--wp--preset--font-size--small: 13px;--wp--preset--font-size--medium: 20px;--wp--preset--font-size--large: 36px;--wp--preset--font-size--x-large: 42px;--wp--preset--spacing--20: 0.44rem;--wp--preset--spacing--30: 0.67rem;--wp--preset--spacing--40: 1rem;--wp--preset--spacing--50: 1.5rem;--wp--preset--spacing--60: 2.25rem;--wp--preset--spacing--70: 3.38rem;--wp--preset--spacing--80: 5.06rem;--wp--preset--shadow--natural: 6px 6px 9px rgba(0, 0, 0, 0.2);--wp--preset--shadow--deep: 12px 12px 50px rgba(0, 0, 0, 0.4);--wp--preset--shadow--sharp: 6px 6px 0px rgba(0, 0, 0, 0.2);--wp--preset--shadow--outlined: 6px 6px 0px -3px rgb(255, 255, 255), 6px 6px rgb(0, 0, 0);--wp--preset--shadow--crisp: 6px 6px 0px rgb(0, 0, 0);}:root { --wp--style--global--content-size: 800px;--wp--style--global--wide-size: 1200px; }:where(body) { margin: 0; }.wp-site-blocks > .alignleft { float: left; margin-right: 2em; }.wp-site-blocks > .alignright { float: right; margin-left: 2em; }.wp-site-blocks > .aligncenter { justify-content: center; margin-left: auto; margin-right: auto; }:where(.wp-site-blocks) > * { margin-block-start: 24px; margin-block-end: 0; }:where(.wp-site-blocks) > :first-child { margin-block-start: 0; }:where(.wp-site-blocks) > :last-child { margin-block-end: 0; }:root { --wp--style--block-gap: 24px; }:root :where(.is-layout-flow) > :first-child{margin-block-start: 0;}:root :where(.is-layout-flow) > :last-child{margin-block-end: 0;}:root :where(.is-layout-flow) > *{margin-block-start: 24px;margin-block-end: 0;}:root :where(.is-layout-constrained) > :first-child{margin-block-start: 0;}:root :where(.is-layout-constrained) > :last-child{margin-block-end: 0;}:root :where(.is-layout-constrained) > *{margin-block-start: 24px;margin-block-end: 0;}:root :where(.is-layout-flex){gap: 24px;}:root :where(.is-layout-grid){gap: 24px;}.is-layout-flow > .alignleft{float: left;margin-inline-start: 0;margin-inline-end: 2em;}.is-layout-flow > .alignright{float: right;margin-inline-start: 2em;margin-inline-end: 0;}.is-layout-flow > .aligncenter{margin-left: auto !important;margin-right: auto !important;}.is-layout-constrained > .alignleft{float: left;margin-inline-start: 0;margin-inline-end: 2em;}.is-layout-constrained > .alignright{float: right;margin-inline-start: 2em;margin-inline-end: 0;}.is-layout-constrained > .aligncenter{margin-left: auto !important;margin-right: auto !important;}.is-layout-constrained > :where(:not(.alignleft):not(.alignright):not(.alignfull)){max-width: var(--wp--style--global--content-size);margin-left: auto !important;margin-right: auto !important;}.is-layout-constrained > .alignwide{max-width: var(--wp--style--global--wide-size);}body .is-layout-flex{display: flex;}.is-layout-flex{flex-wrap: wrap;align-items: center;}.is-layout-flex > :is(*, div){margin: 0;}body .is-layout-grid{display: grid;}.is-layout-grid > :is(*, div){margin: 0;}body{padding-top: 0px;padding-right: 0px;padding-bottom: 0px;padding-left: 0px;}:root :where(.wp-element-button, .wp-block-button__link){background-color: #32373c;border-width: 0;color: #fff;font-family: inherit;font-size: inherit;font-style: inherit;font-weight: inherit;letter-spacing: inherit;line-height: inherit;padding-top: calc(0.667em + 2px);padding-right: calc(1.333em + 2px);padding-bottom: calc(0.667em + 2px);padding-left: calc(1.333em + 2px);text-decoration: none;text-transform: inherit;}.has-black-color{color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-color{color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-color{color: var(--wp--preset--color--white) !important;}.has-pale-pink-color{color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-color{color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-color{color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-color{color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-color{color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-color{color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-color{color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-color{color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-color{color: var(--wp--preset--color--vivid-purple) !important;}.has-black-background-color{background-color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-background-color{background-color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-background-color{background-color: var(--wp--preset--color--white) !important;}.has-pale-pink-background-color{background-color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-background-color{background-color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-background-color{background-color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-background-color{background-color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-background-color{background-color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-background-color{background-color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-background-color{background-color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-background-color{background-color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-background-color{background-color: var(--wp--preset--color--vivid-purple) !important;}.has-black-border-color{border-color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-border-color{border-color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-border-color{border-color: var(--wp--preset--color--white) !important;}.has-pale-pink-border-color{border-color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-border-color{border-color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-border-color{border-color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-border-color{border-color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-border-color{border-color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-border-color{border-color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-border-color{border-color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-border-color{border-color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-border-color{border-color: var(--wp--preset--color--vivid-purple) !important;}.has-vivid-cyan-blue-to-vivid-purple-gradient-background{background: var(--wp--preset--gradient--vivid-cyan-blue-to-vivid-purple) !important;}.has-light-green-cyan-to-vivid-green-cyan-gradient-background{background: var(--wp--preset--gradient--light-green-cyan-to-vivid-green-cyan) !important;}.has-luminous-vivid-amber-to-luminous-vivid-orange-gradient-background{background: var(--wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange) !important;}.has-luminous-vivid-orange-to-vivid-red-gradient-background{background: var(--wp--preset--gradient--luminous-vivid-orange-to-vivid-red) !important;}.has-very-light-gray-to-cyan-bluish-gray-gradient-background{background: var(--wp--preset--gradient--very-light-gray-to-cyan-bluish-gray) !important;}.has-cool-to-warm-spectrum-gradient-background{background: var(--wp--preset--gradient--cool-to-warm-spectrum) !important;}.has-blush-light-purple-gradient-background{background: var(--wp--preset--gradient--blush-light-purple) !important;}.has-blush-bordeaux-gradient-background{background: var(--wp--preset--gradient--blush-bordeaux) !important;}.has-luminous-dusk-gradient-background{background: var(--wp--preset--gradient--luminous-dusk) !important;}.has-pale-ocean-gradient-background{background: var(--wp--preset--gradient--pale-ocean) !important;}.has-electric-grass-gradient-background{background: var(--wp--preset--gradient--electric-grass) !important;}.has-midnight-gradient-background{background: var(--wp--preset--gradient--midnight) !important;}.has-small-font-size{font-size: var(--wp--preset--font-size--small) !important;}.has-medium-font-size{font-size: var(--wp--preset--font-size--medium) !important;}.has-large-font-size{font-size: var(--wp--preset--font-size--large) !important;}.has-x-large-font-size{font-size: var(--wp--preset--font-size--x-large) !important;}
-:root :where(.wp-block-icon svg){width: 24px;}
-:root :where(.wp-block-pullquote){font-size: 1.5em;line-height: 1.6;}
-/*# sourceURL=global-styles-inline-css */
-`
-      }} />
-      <style id="woocommerce-inline-inline-css" dangerouslySetInnerHTML={{
-        __html: `
-.woocommerce form .form-row .required { visibility: visible; }
-/*# sourceURL=woocommerce-inline-inline-css */
-`
-      }} />
-      <style id="style-inline-images-4" dangerouslySetInnerHTML={{
-        __html: `.woocommerce-product-gallery{ opacity: 1 !important; }`
-      }} />
-      {/* Lazyload CSS overrides removed to restore gallery background images */}
-      <style id="wp-custom-css" dangerouslySetInnerHTML={{
-        __html: `
-
-
-/** Start Block Kit CSS: 144-3-3a7d335f39a8579c20cdf02f8d462582 **/
-
-.envato-block__preview{overflow: visible;}
-
-/* Envato Kit 141 Custom Styles - Applied to the element under Advanced */
-
-.elementor-headline-animation-type-drop-in .elementor-headline-dynamic-wrapper{
-	text-align: center;
-}
-.envato-kit-141-top-0 h1,
-.envato-kit-141-top-0 h2,
-.envato-kit-141-top-0 h3,
-.envato-kit-141-top-0 h4,
-.envato-kit-141-top-0 h5,
-.envato-kit-141-top-0 h6,
-.envato-kit-141-top-0 p {
-	margin-top: 0;
-}
-
-.envato-kit-141-newsletter-inline .elementor-field-textual.elementor-size-md {
-	padding-left: 1.5rem;
-	padding-right: 1.5rem;
-}
-
-.envato-kit-141-bottom-0 p {
-	margin-bottom: 0;
-}
-
-.envato-kit-141-bottom-8 .elementor-price-list .elementor-price-list-item .elementor-price-list-header {
-	margin-bottom: .5rem;
-}
-
-.envato-kit-141.elementor-widget-testimonial-carousel.elementor-pagination-type-bullets .swiper-container {
-	padding-bottom: 52px;
-}
-
-.envato-kit-141-display-inline {
-	display: inline-block;
-}
-
-.envato-kit-141 .elementor-slick-slider ul.slick-dots {
-	bottom: -40px;
-}
-
-/** End Block Kit CSS: 144-3-3a7d335f39a8579c20cdf02f8d462582 **/
-
-
-
-
-
-.ant-select-selection-search-input {
-    opacity: 1 !important;
-    pointer-events: auto !important;
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/* ===== APPLY ONLY ON CERTIFICATE PAGE ===== */
-.certificate-page .eventin-certificate-wrapper {
-    width: 1900px !important;
-    height: auto !important;
-    margin: 0 auto;
-    position: relative;
-    overflow: visible !important;
-}
-
-/* ===== IMAGE FULL RESOLUTION ===== */
-.certificate-page .eventin-certificate img,
-.certificate-page .elementor-widget-image img {
-    width: 1900px !important;
-    height: auto !important;
-    max-width: none !important;
-    display: block;
-}
-
-/* ===== FIX NAME POSITION ===== */
-.certificate-page .eventin-certificate-wrapper .elementor-heading-title {
-    position: absolute !important;
-    top: 820px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 80%;
-    text-align: center;
-
-    margin: 0 !important;
-    padding: 0 !important;
-    line-height: 1.2;
-}
-
-/* ===== REMOVE SPACE (ONLY INSIDE CERTIFICATE) ===== */
-.certificate-page .eventin-certificate-wrapper .elementor-section,
-.certificate-page .eventin-certificate-wrapper .elementor-container,
-.certificate-page .eventin-certificate-wrapper .elementor-column {
-    margin: 0 !important;
-    padding: 0 !important;
-}
-
-/* ===== PDF FIX ===== */
-@media print {
-    .certificate-page .eventin-certificate-wrapper {
-        width: 1900px !important;
-        height: auto !important;
-        overflow: visible !important;
-        page-break-inside: avoid;
-    }
-}
-
-/* ===== PREVENT BLUR ===== */
-.certificate-page .eventin-certificate,
-.certificate-page .eventin-certificate-wrapper {
-    transform: none !important;
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-`
-      }} />
-      <style id="etn-custom-css-inline-css" dangerouslySetInnerHTML={{
-        __html: `
-
-        .etn-event-single-content-wrap .etn-event-meta .etn-event-category span,
-        .etn-event-item .etn-event-footer .etn-atend-btn .etn-btn-border,
-        .etn-btn.etn-btn-border, .attr-btn-primary.etn-btn-border,
-        .etn-attendee-form .etn-btn.etn-btn-border,
-        .etn-ticket-widget .etn-btn.etn-btn-border,
-        .etn-settings-dashboard .button-primary.etn-btn-border,
-        .etn-single-speaker-item .etn-speaker-content a:hover,
-        .etn-event-style2 .etn-event-date,
-        .etn-event-style3 .etn-event-content .etn-title a:hover,
-        .event-tab-wrapper ul li a.etn-tab-a,
-        .etn-speaker-item.style-3:hover .etn-speaker-content .etn-title a,
-		.etn-variable-ticket-widget .ticket-header,
-		.events_calendar_list .calendar-event-details:hover .calendar-event-title,
-        .etn-event-item:hover .etn-title a,
-		.etn-recurring-widget .etn-date-text,
-		
-		.etn-event-header ul li i {
-            color: #5D78FF;
-        }
-        .etn-event-item .etn-event-category span,
-        .etn-btn, .attr-btn-primary,
-        .etn-attendee-form .etn-btn,
-        .etn-ticket-widget .etn-btn,
-        .schedule-list-1 .schedule-header,
-        .speaker-style4 .etn-speaker-content .etn-title a,
-        .etn-speaker-details3 .speaker-title-info,
-        .etn-event-slider .swiper-pagination-bullet, .etn-speaker-slider .swiper-pagination-bullet,
-        .etn-event-slider .swiper-button-next, .etn-event-slider .swiper-button-prev,
-        .etn-speaker-slider .swiper-button-next, .etn-speaker-slider .swiper-button-prev,
-        .etn-single-speaker-item .etn-speaker-thumb .etn-speakers-social a,
-        .etn-event-header .etn-event-countdown-wrap .etn-count-item,
-        .schedule-tab-1 .etn-nav li a.etn-active,
-        .schedule-list-wrapper .schedule-listing.multi-schedule-list .schedule-slot-time,
-        .etn-speaker-item.style-3 .etn-speaker-content .etn-speakers-social a,
-        .event-tab-wrapper ul li a.etn-tab-a.etn-active,
-        .etn-btn, button.etn-btn.etn-btn-primary,
-        .etn-schedule-style-3 ul li:before,
-        .etn-zoom-btn,
-        .cat-radio-btn-list [type=radio]:checked+label:after,
-        .cat-radio-btn-list [type=radio]:not(:checked)+label:after,
-        .etn-default-calendar-style .fc-button:hover,
-        .etn-default-calendar-style .fc-state-highlight,
-		.etn-calender-list a:hover,
-        .events_calendar_standard .cat-dropdown-list select,
-		.etn-event-banner-wrap,
-		.events_calendar_list .calendar-event-details .calendar-event-content .calendar-event-category-wrap .etn-event-category,
-		.etn-variable-ticket-widget .etn-add-to-cart-block,
-		.etn-recurring-event-wrapper #seeMore,
-		.more-event-tag,
-        .etn-settings-dashboard .button-primary{
-            background-color: #5D78FF;
-        }
-
-        .etn-event-item .etn-event-footer .etn-atend-btn .etn-btn-border,
-        .etn-btn.etn-btn-border, .attr-btn-primary.etn-btn-border,
-        .etn-attendee-form .etn-btn.etn-btn-border,
-        .etn-ticket-widget .etn-btn.etn-btn-border,
-        .event-tab-wrapper ul li a.etn-tab-a,
-        .event-tab-wrapper ul li a.etn-tab-a.etn-active,
-        .etn-schedule-style-3 ul li:after,
-        .etn-default-calendar-style .fc-ltr .fc-basic-view .fc-day-top.fc-today .fc-day-number,
-        .etn-default-calendar-style .fc-button:hover,
-		.etn-variable-ticket-widget .etn-variable-total-price,
-        .etn-settings-dashboard .button-primary.etn-btn-border{
-            border-color: #5D78FF;
-        }
-        .schedule-tab-wrapper .etn-nav li a.etn-active,
-        .etn-speaker-item.style-3 .etn-speaker-content{
-            border-bottom-color: #5D78FF;
-        }
-        .schedule-tab-wrapper .etn-nav li a:after,
-        .etn-event-list2 .etn-event-content,
-        .schedule-tab-1 .etn-nav li a.etn-active:after{
-            border-color: #5D78FF transparent transparent transparent;
-        }
-
-        .etn-default-calendar-style .fc .fc-daygrid-bg-harness:first-of-type:before{
-            background-color: #5D78FF2A;
-        }
-		 .sidebar .etn-default-calendar-style .fc .fc-daygrid-bg-harness:nth-of-type(1)::before,
-		 .left-sidebar .etn-default-calendar-style .fc .fc-daygrid-bg-harness:nth-of-type(1)::before,
-		 .right-sidebar .etn-default-calendar-style .fc .fc-daygrid-bg-harness:nth-of-type(1)::before,
-		  .widget .etn-default-calendar-style .fc .fc-daygrid-bg-harness:nth-of-type(1)::before,
-		   .widgets .etn-default-calendar-style .fc .fc-daygrid-bg-harness:nth-of-type(1)::before,
-		   .main-sidebar .etn-default-calendar-style .fc .fc-daygrid-bg-harness:nth-of-type(1)::before,
-		    #sidebar .etn-default-calendar-style .fc .fc-daygrid-bg-harness:nth-of-type(1)::before{
-				background-color: #5D78FF;
-		 }
-
-
-        .etn-event-item .etn-event-location,
-        .etn-event-tag-list a:hover,
-        .etn-schedule-wrap .etn-schedule-info .etn-schedule-time{
-            color: ;
-        }
-        .etn-event-tag-list a:hover{
-            border-color: ;
-        }
-        .etn-btn:hover, .attr-btn-primary:hover,
-        .etn-attendee-form .etn-btn:hover,
-        .etn-ticket-widget .etn-btn:hover,
-        .speaker-style4 .etn-speaker-content p,
-        .etn-btn, button.etn-btn.etn-btn-primary:hover,
-        .etn-zoom-btn,
-		.events_calendar_list .calendar-event-details .event-calendar-action .etn-btn, .events_calendar_list .calendar-event-details .event-calendar-action .etn-price.event-calendar-details-btn,
-        .etn-speaker-item.style-3 .etn-speaker-content .etn-speakers-social a:hover,
-        .etn-single-speaker-item .etn-speaker-thumb .etn-speakers-social a:hover,
-		.etn-recurring-event-wrapper #seeMore:hover, .etn-recurring-event-wrapper #seeMore:focus,
-        .etn-settings-dashboard .button-primary:hover{
-            background-color: ;
-        }
-		.events_calendar_list .calendar-event-details .event-calendar-action .etn-btn {
-			max-width: 120px;
-			display: block;
-			text-align: center;
-			margin-left: auto;
-		}
-/*# sourceURL=etn-custom-css-inline-css */
-`
-      }} />
-      
-      <div 
-        dangerouslySetInnerHTML={{
-          __html: `
-<a class="skip-link screen-reader-text" href="#content">Skip to content</a>
+      <div dangerouslySetInnerHTML={{ __html: `<a class="skip-link screen-reader-text" href="#content">Skip to content</a>
 <header class="elementor elementor-113 elementor-location-header" data-elementor-id="113" data-elementor-post-type="elementor_library" data-elementor-type="header">
 <section class="elementor-section elementor-top-section elementor-element elementor-element-3040c7d5 elementor-section-content-middle elementor-hidden-mobile elementor-hidden-desktop elementor-hidden-tablet elementor-section-boxed elementor-section-height-default elementor-section-height-default" data-e-type="section" data-element_type="section" data-id="3040c7d5" data-settings='{"background_background":"gradient"}'>
 <div class="elementor-background-overlay"></div>
@@ -875,257 +638,11 @@ img:is([sizes=auto i],[sizes^="auto," i]){contain-intrinsic-size:3000px 1500px}
 </div>
 </div>
 </section>
-<section class="elementor-section elementor-top-section elementor-element elementor-element-8458260 elementor-section-boxed elementor-section-height-default elementor-section-height-default" data-e-type="section" data-element_type="section" data-id="8458260">
-<div class="elementor-container elementor-column-gap-no">
-<div class="elementor-column elementor-col-100 elementor-top-column elementor-element elementor-element-c78649f" data-e-type="column" data-element_type="column" data-id="c78649f">
-<div class="elementor-widget-wrap elementor-element-populated">
-<div class="elementor-element elementor-element-2008e4c elementor-widget elementor-widget-gallery" data-e-type="widget" data-element_type="widget" data-id="2008e4c" data-settings='{"columns":5,"gap":{"unit":"px","size":20,"sizes":[]},"aspect_ratio":"1:1","overlay_title":"caption","overlay_description":"description","columns_mobile":3,"lazyload":"yes","gallery_layout":"grid","columns_tablet":2,"gap_tablet":{"unit":"px","size":10,"sizes":[]},"gap_mobile":{"unit":"px","size":10,"sizes":[]},"link_to":"file","overlay_background":"yes","content_hover_animation":"fade-in"}' data-widget_type="gallery.default">
-<div class="elementor-widget-container">
-<div class="elementor-gallery__container e-gallery-container e-gallery-grid" style={{
-  display: 'grid',
-  gridTemplateColumns: 'repeat(5, 1fr)',
-  gridGap: '20px',
-  width: '100%',
-  '--columns': 5,
-  '--hgap': '20px',
-  '--vgap': '20px',
-  '--aspect-ratio': '100%'
-}}>
-<a class="e-gallery-item elementor-gallery-item elementor-animated-content" data-e-action-hash="#elementor-action%3Aaction%3Dlightbox%26settings%3DeyJpZCI6NDExLCJ1cmwiOiJodHRwczpcL1wvYXl1cnZlZGFtZm91bmRhdGlvbi5vcmdcL3dwLWNvbnRlbnRcL3VwbG9hZHNcLzIwMjVcLzAzXC8xRjVBNDM1My1zY2FsZWQuanBnIiwic2xpZGVzaG93IjoiMjAwOGU0YyJ9" data-elementor-lightbox-slideshow="2008e4c" data-elementor-lightbox-title="1F5A4353" data-elementor-open-lightbox="yes" href="/uploads/2025/03/1F5A4353-scaled.jpg">
-<div aria-label="" class="e-gallery-image elementor-gallery-item__image e-gallery-image-loaded" data-height="1707" data-thumbnail="https://ayurvedamfoundation.org/uploads/2025/03/1F5A4353-scaled.jpg" data-width="2560" role="img" style={{ backgroundImage: "url('/uploads/2025/03/1F5A4353-scaled.jpg')", backgroundSize: "cover", backgroundPosition: "center", paddingBottom: "100%" }} ></div>
-<div class="elementor-gallery-item__overlay"></div>
-<div class="elementor-gallery-item__content">
-</div>
-</a>
-<a class="e-gallery-item elementor-gallery-item elementor-animated-content" data-e-action-hash="#elementor-action%3Aaction%3Dlightbox%26settings%3DeyJpZCI6NDEwLCJ1cmwiOiJodHRwczpcL1wvYXl1cnZlZGFtZm91bmRhdGlvbi5vcmdcL3dwLWNvbnRlbnRcL3VwbG9hZHNcLzIwMjVcLzAzXC8xRjVBNDYwMi1zY2FsZWQuanBnIiwic2xpZGVzaG93IjoiMjAwOGU0YyJ9" data-elementor-lightbox-slideshow="2008e4c" data-elementor-lightbox-title="1F5A4602" data-elementor-open-lightbox="yes" href="/uploads/2025/03/1F5A4602-scaled.jpg">
-<div aria-label="" class="e-gallery-image elementor-gallery-item__image e-gallery-image-loaded" data-height="1707" data-thumbnail="https://ayurvedamfoundation.org/uploads/2025/03/1F5A4602-scaled.jpg" data-width="2560" role="img" style={{ backgroundImage: "url('/uploads/2025/03/1F5A4602-scaled.jpg')", backgroundSize: "cover", backgroundPosition: "center", paddingBottom: "100%" }} ></div>
-<div class="elementor-gallery-item__overlay"></div>
-<div class="elementor-gallery-item__content">
-</div>
-</a>
-<a class="e-gallery-item elementor-gallery-item elementor-animated-content" data-e-action-hash="#elementor-action%3Aaction%3Dlightbox%26settings%3DeyJpZCI6NDA5LCJ1cmwiOiJodHRwczpcL1wvYXl1cnZlZGFtZm91bmRhdGlvbi5vcmdcL3dwLWNvbnRlbnRcL3VwbG9hZHNcLzIwMjVcLzAzXC8xRjVBNDYwNy1zY2FsZWQuanBnIiwic2xpZGVzaG93IjoiMjAwOGU0YyJ9" data-elementor-lightbox-slideshow="2008e4c" data-elementor-lightbox-title="1F5A4607" data-elementor-open-lightbox="yes" href="/uploads/2025/03/1F5A4607-scaled.jpg">
-<div aria-label="" class="e-gallery-image elementor-gallery-item__image e-gallery-image-loaded" data-height="1707" data-thumbnail="https://ayurvedamfoundation.org/uploads/2025/03/1F5A4607-scaled.jpg" data-width="2560" role="img" style={{ backgroundImage: "url('/uploads/2025/03/1F5A4607-scaled.jpg')", backgroundSize: "cover", backgroundPosition: "center", paddingBottom: "100%" }} ></div>
-<div class="elementor-gallery-item__overlay"></div>
-<div class="elementor-gallery-item__content">
-</div>
-</a>
-<a class="e-gallery-item elementor-gallery-item elementor-animated-content" data-e-action-hash="#elementor-action%3Aaction%3Dlightbox%26settings%3DeyJpZCI6NDA4LCJ1cmwiOiJodHRwczpcL1wvYXl1cnZlZGFtZm91bmRhdGlvbi5vcmdcL3dwLWNvbnRlbnRcL3VwbG9hZHNcLzIwMjVcLzAzXC9EU0NfNzM5NS1zY2FsZWQuanBnIiwic2xpZGVzaG93IjoiMjAwOGU0YyJ9" data-elementor-lightbox-slideshow="2008e4c" data-elementor-lightbox-title="DSC_7395" data-elementor-open-lightbox="yes" href="/uploads/2025/03/DSC_7395-scaled.jpg">
-<div aria-label="" class="e-gallery-image elementor-gallery-item__image e-gallery-image-loaded" data-height="1703" data-thumbnail="https://ayurvedamfoundation.org/uploads/2025/03/DSC_7395-scaled.jpg" data-width="2560" role="img" style={{ backgroundImage: "url('/uploads/2025/03/DSC_7395-scaled.jpg')", backgroundSize: "cover", backgroundPosition: "center", paddingBottom: "100%" }} ></div>
-<div class="elementor-gallery-item__overlay"></div>
-<div class="elementor-gallery-item__content">
-</div>
-</a>
-<a class="e-gallery-item elementor-gallery-item elementor-animated-content" data-e-action-hash="#elementor-action%3Aaction%3Dlightbox%26settings%3DeyJpZCI6NDA0LCJ1cmwiOiJodHRwczpcL1wvYXl1cnZlZGFtZm91bmRhdGlvbi5vcmdcL3dwLWNvbnRlbnRcL3VwbG9hZHNcLzIwMjVcLzAzXC9ldmVudHVtLWltZzM5LmpwZyIsInNsaWRlc2hvdyI6IjIwMDhlNGMifQ%3D%3D" data-elementor-lightbox-slideshow="2008e4c" data-elementor-lightbox-title="eventum-img39.jpg" data-elementor-open-lightbox="yes" href="/uploads/2025/03/eventum-img39.jpg">
-<div aria-label="" class="e-gallery-image elementor-gallery-item__image e-gallery-image-loaded" data-height="800" data-thumbnail="https://ayurvedamfoundation.org/uploads/2025/03/eventum-img39.jpg" data-width="1200" role="img" style={{ backgroundImage: "url('/uploads/2025/03/eventum-img39.jpg')", backgroundSize: "cover", backgroundPosition: "center", paddingBottom: "100%" }} ></div>
-<div class="elementor-gallery-item__overlay"></div>
-<div class="elementor-gallery-item__content">
-</div>
-</a>
-<a class="e-gallery-item elementor-gallery-item elementor-animated-content" data-e-action-hash="#elementor-action%3Aaction%3Dlightbox%26settings%3DeyJpZCI6NDAzLCJ1cmwiOiJodHRwczpcL1wvYXl1cnZlZGFtZm91bmRhdGlvbi5vcmdcL3dwLWNvbnRlbnRcL3VwbG9hZHNcLzIwMjVcLzAzXC9JTUctMjAyNTAzMTktV0EwMDM4LmpwZyIsInNsaWRlc2hvdyI6IjIwMDhlNGMifQ%3D%3D" data-elementor-lightbox-slideshow="2008e4c" data-elementor-lightbox-title="IMG-20250319-WA0038" data-elementor-open-lightbox="yes" href="/uploads/2025/03/IMG-20250319-WA0038.jpg">
-<div aria-label="" class="e-gallery-image elementor-gallery-item__image e-gallery-image-loaded" data-height="851" data-thumbnail="https://ayurvedamfoundation.org/uploads/2025/03/IMG-20250319-WA0038.jpg" data-width="1280" role="img" style={{ backgroundImage: "url('/uploads/2025/03/IMG-20250319-WA0038.jpg')", backgroundSize: "cover", backgroundPosition: "center", paddingBottom: "100%" }} ></div>
-<div class="elementor-gallery-item__overlay"></div>
-<div class="elementor-gallery-item__content">
-</div>
-</a>
-<a class="e-gallery-item elementor-gallery-item elementor-animated-content" data-e-action-hash="#elementor-action%3Aaction%3Dlightbox%26settings%3DeyJpZCI6Mzk3LCJ1cmwiOiJodHRwczpcL1wvYXl1cnZlZGFtZm91bmRhdGlvbi5vcmdcL3dwLWNvbnRlbnRcL3VwbG9hZHNcLzIwMjVcLzAzXC9JTUctMjAyNTAzMTktV0EwMDQyLmpwZyIsInNsaWRlc2hvdyI6IjIwMDhlNGMifQ%3D%3D" data-elementor-lightbox-slideshow="2008e4c" data-elementor-lightbox-title="IMG-20250319-WA0042" data-elementor-open-lightbox="yes" href="/uploads/2025/03/IMG-20250319-WA0042.jpg">
-<div aria-label="" class="e-gallery-image elementor-gallery-item__image e-gallery-image-loaded" data-height="853" data-thumbnail="https://ayurvedamfoundation.org/uploads/2025/03/IMG-20250319-WA0042.jpg" data-width="1280" role="img" style={{ backgroundImage: "url('/uploads/2025/03/IMG-20250319-WA0042.jpg')", backgroundSize: "cover", backgroundPosition: "center", paddingBottom: "100%" }} ></div>
-<div class="elementor-gallery-item__overlay"></div>
-<div class="elementor-gallery-item__content">
-</div>
-</a>
-<a class="e-gallery-item elementor-gallery-item elementor-animated-content" data-e-action-hash="#elementor-action%3Aaction%3Dlightbox%26settings%3DeyJpZCI6Mzk4LCJ1cmwiOiJodHRwczpcL1wvYXl1cnZlZGFtZm91bmRhdGlvbi5vcmdcL3dwLWNvbnRlbnRcL3VwbG9hZHNcLzIwMjVcLzAzXC9JTUctMjAyNTAzMTktV0EwMDQwLmpwZyIsInNsaWRlc2hvdyI6IjIwMDhlNGMifQ%3D%3D" data-elementor-lightbox-slideshow="2008e4c" data-elementor-lightbox-title="IMG-20250319-WA0040" data-elementor-open-lightbox="yes" href="/uploads/2025/03/IMG-20250319-WA0040.jpg">
-<div aria-label="" class="e-gallery-image elementor-gallery-item__image e-gallery-image-loaded" data-height="851" data-thumbnail="https://ayurvedamfoundation.org/uploads/2025/03/IMG-20250319-WA0040.jpg" data-width="1280" role="img" style={{ backgroundImage: "url('/uploads/2025/03/IMG-20250319-WA0040.jpg')", backgroundSize: "cover", backgroundPosition: "center", paddingBottom: "100%" }} ></div>
-<div class="elementor-gallery-item__overlay"></div>
-<div class="elementor-gallery-item__content">
-</div>
-</a>
-<a class="e-gallery-item elementor-gallery-item elementor-animated-content" data-e-action-hash="#elementor-action%3Aaction%3Dlightbox%26settings%3DeyJpZCI6NDAwLCJ1cmwiOiJodHRwczpcL1wvYXl1cnZlZGFtZm91bmRhdGlvbi5vcmdcL3dwLWNvbnRlbnRcL3VwbG9hZHNcLzIwMjVcLzAzXC9JTUctMjAyNTAzMTktV0EwMDM5LmpwZyIsInNsaWRlc2hvdyI6IjIwMDhlNGMifQ%3D%3D" data-elementor-lightbox-slideshow="2008e4c" data-elementor-lightbox-title="IMG-20250319-WA0039" data-elementor-open-lightbox="yes" href="/uploads/2025/03/IMG-20250319-WA0039.jpg">
-<div aria-label="" class="e-gallery-image elementor-gallery-item__image e-gallery-image-loaded" data-height="853" data-thumbnail="https://ayurvedamfoundation.org/uploads/2025/03/IMG-20250319-WA0039.jpg" data-width="1280" role="img" style={{ backgroundImage: "url('/uploads/2025/03/IMG-20250319-WA0039.jpg')", backgroundSize: "cover", backgroundPosition: "center", paddingBottom: "100%" }} ></div>
-<div class="elementor-gallery-item__overlay"></div>
-<div class="elementor-gallery-item__content">
-</div>
-</a>
-<a class="e-gallery-item elementor-gallery-item elementor-animated-content" data-e-action-hash="#elementor-action%3Aaction%3Dlightbox%26settings%3DeyJpZCI6NDAyLCJ1cmwiOiJodHRwczpcL1wvYXl1cnZlZGFtZm91bmRhdGlvbi5vcmdcL3dwLWNvbnRlbnRcL3VwbG9hZHNcLzIwMjVcLzAzXC9ldmVudHVtLWltZzQwLmpwZyIsInNsaWRlc2hvdyI6IjIwMDhlNGMifQ%3D%3D" data-elementor-lightbox-slideshow="2008e4c" data-elementor-lightbox-title="eventum-img40.jpg" data-elementor-open-lightbox="yes" href="/uploads/2025/03/eventum-img40.jpg">
-<div aria-label="" class="e-gallery-image elementor-gallery-item__image e-gallery-image-loaded" data-height="800" data-thumbnail="https://ayurvedamfoundation.org/uploads/2025/03/eventum-img40.jpg" data-width="1200" role="img" style={{ backgroundImage: "url('/uploads/2025/03/eventum-img40.jpg')", backgroundSize: "cover", backgroundPosition: "center", paddingBottom: "100%" }} ></div>
-<div class="elementor-gallery-item__overlay"></div>
-<div class="elementor-gallery-item__content">
-</div>
-</a>
-<a class="e-gallery-item elementor-gallery-item elementor-animated-content" data-e-action-hash="#elementor-action%3Aaction%3Dlightbox%26settings%3DeyJpZCI6Mzk2LCJ1cmwiOiJodHRwczpcL1wvYXl1cnZlZGFtZm91bmRhdGlvbi5vcmdcL3dwLWNvbnRlbnRcL3VwbG9hZHNcLzIwMjVcLzAzXC9JTUctMjAyNTAzMTktV0EwMDQzLmpwZyIsInNsaWRlc2hvdyI6IjIwMDhlNGMifQ%3D%3D" data-elementor-lightbox-slideshow="2008e4c" data-elementor-lightbox-title="IMG-20250319-WA0043" data-elementor-open-lightbox="yes" href="/uploads/2025/03/IMG-20250319-WA0043.jpg">
-<div aria-label="" class="e-gallery-image elementor-gallery-item__image e-gallery-image-loaded" data-height="853" data-thumbnail="https://ayurvedamfoundation.org/uploads/2025/03/IMG-20250319-WA0043.jpg" data-width="1280" role="img" style={{ backgroundImage: "url('/uploads/2025/03/IMG-20250319-WA0043.jpg')", backgroundSize: "cover", backgroundPosition: "center", paddingBottom: "100%" }} ></div>
-<div class="elementor-gallery-item__overlay"></div>
-<div class="elementor-gallery-item__content">
-</div>
-</a>
-<a class="e-gallery-item elementor-gallery-item elementor-animated-content" data-e-action-hash="#elementor-action%3Aaction%3Dlightbox%26settings%3DeyJpZCI6Mzk1LCJ1cmwiOiJodHRwczpcL1wvYXl1cnZlZGFtZm91bmRhdGlvbi5vcmdcL3dwLWNvbnRlbnRcL3VwbG9hZHNcLzIwMjVcLzAzXC9JTUctMjAyNTAzMTktV0EwMDQ0LmpwZyIsInNsaWRlc2hvdyI6IjIwMDhlNGMifQ%3D%3D" data-elementor-lightbox-slideshow="2008e4c" data-elementor-lightbox-title="IMG-20250319-WA0044" data-elementor-open-lightbox="yes" href="/uploads/2025/03/IMG-20250319-WA0044.jpg">
-<div aria-label="" class="e-gallery-image elementor-gallery-item__image e-gallery-image-loaded" data-height="853" data-thumbnail="https://ayurvedamfoundation.org/uploads/2025/03/IMG-20250319-WA0044.jpg" data-width="1280" role="img" style={{ backgroundImage: "url('/uploads/2025/03/IMG-20250319-WA0044.jpg')", backgroundSize: "cover", backgroundPosition: "center", paddingBottom: "100%" }} ></div>
-<div class="elementor-gallery-item__overlay"></div>
-<div class="elementor-gallery-item__content">
-</div>
-</a>
-<a class="e-gallery-item elementor-gallery-item elementor-animated-content" data-e-action-hash="#elementor-action%3Aaction%3Dlightbox%26settings%3DeyJpZCI6Mzk0LCJ1cmwiOiJodHRwczpcL1wvYXl1cnZlZGFtZm91bmRhdGlvbi5vcmdcL3dwLWNvbnRlbnRcL3VwbG9hZHNcLzIwMjVcLzAzXC9JTUctMjAyNTAzMTktV0EwMDQ1LmpwZyIsInNsaWRlc2hvdyI6IjIwMDhlNGMifQ%3D%3D" data-elementor-lightbox-slideshow="2008e4c" data-elementor-lightbox-title="IMG-20250319-WA0045" data-elementor-open-lightbox="yes" href="/uploads/2025/03/IMG-20250319-WA0045.jpg">
-<div aria-label="" class="e-gallery-image elementor-gallery-item__image e-gallery-image-loaded" data-height="853" data-thumbnail="https://ayurvedamfoundation.org/uploads/2025/03/IMG-20250319-WA0045.jpg" data-width="1280" role="img" style={{ backgroundImage: "url('/uploads/2025/03/IMG-20250319-WA0045.jpg')", backgroundSize: "cover", backgroundPosition: "center", paddingBottom: "100%" }} ></div>
-<div class="elementor-gallery-item__overlay"></div>
-<div class="elementor-gallery-item__content">
-</div>
-</a>
-<a class="e-gallery-item elementor-gallery-item elementor-animated-content" data-e-action-hash="#elementor-action%3Aaction%3Dlightbox%26settings%3DeyJpZCI6MzkyLCJ1cmwiOiJodHRwczpcL1wvYXl1cnZlZGFtZm91bmRhdGlvbi5vcmdcL3dwLWNvbnRlbnRcL3VwbG9hZHNcLzIwMjVcLzAzXC9JTUctMjAyNTAzMTktV0EwMDQ2LTEuanBnIiwic2xpZGVzaG93IjoiMjAwOGU0YyJ9" data-elementor-lightbox-slideshow="2008e4c" data-elementor-lightbox-title="IMG-20250319-WA0046 (1)" data-elementor-open-lightbox="yes" href="/uploads/2025/03/IMG-20250319-WA0046-1.jpg">
-<div aria-label="" class="e-gallery-image elementor-gallery-item__image e-gallery-image-loaded" data-height="851" data-thumbnail="https://ayurvedamfoundation.org/uploads/2025/03/IMG-20250319-WA0046-1.jpg" data-width="1280" role="img" style={{ backgroundImage: "url('/uploads/2025/03/IMG-20250319-WA0046-1.jpg')", backgroundSize: "cover", backgroundPosition: "center", paddingBottom: "100%" }} ></div>
-<div class="elementor-gallery-item__overlay"></div>
-<div class="elementor-gallery-item__content">
-</div>
-</a>
-<a class="e-gallery-item elementor-gallery-item elementor-animated-content" data-e-action-hash="#elementor-action%3Aaction%3Dlightbox%26settings%3DeyJpZCI6MzkwLCJ1cmwiOiJodHRwczpcL1wvYXl1cnZlZGFtZm91bmRhdGlvbi5vcmdcL3dwLWNvbnRlbnRcL3VwbG9hZHNcLzIwMjVcLzAzXC9JTUctMjAyNTAzMTktV0EwMDU5LmpwZyIsInNsaWRlc2hvdyI6IjIwMDhlNGMifQ%3D%3D" data-elementor-lightbox-slideshow="2008e4c" data-elementor-lightbox-title="IMG-20250319-WA0059" data-elementor-open-lightbox="yes" href="/uploads/2025/03/IMG-20250319-WA0059.jpg">
-<div aria-label="" class="e-gallery-image elementor-gallery-item__image e-gallery-image-loaded" data-height="851" data-thumbnail="https://ayurvedamfoundation.org/uploads/2025/03/IMG-20250319-WA0059.jpg" data-width="1280" role="img" style={{ backgroundImage: "url('/uploads/2025/03/IMG-20250319-WA0059.jpg')", backgroundSize: "cover", backgroundPosition: "center", paddingBottom: "100%" }} ></div>
-<div class="elementor-gallery-item__overlay"></div>
-<div class="elementor-gallery-item__content">
-</div>
-</a>
-<a class="e-gallery-item elementor-gallery-item elementor-animated-content" data-e-action-hash="#elementor-action%3Aaction%3Dlightbox%26settings%3DeyJpZCI6Mzg0LCJ1cmwiOiJodHRwczpcL1wvYXl1cnZlZGFtZm91bmRhdGlvbi5vcmdcL3dwLWNvbnRlbnRcL3VwbG9hZHNcLzIwMjVcLzAzXC9JTUctMjAyNTAzMTktV0EwMDY1LmpwZyIsInNsaWRlc2hvdyI6IjIwMDhlNGMifQ%3D%3D" data-elementor-lightbox-slideshow="2008e4c" data-elementor-lightbox-title="IMG-20250319-WA0065" data-elementor-open-lightbox="yes" href="/uploads/2025/03/IMG-20250319-WA0065.jpg">
-<div aria-label="" class="e-gallery-image elementor-gallery-item__image e-gallery-image-loaded" data-height="853" data-thumbnail="https://ayurvedamfoundation.org/uploads/2025/03/IMG-20250319-WA0065.jpg" data-width="1280" role="img" style={{ backgroundImage: "url('/uploads/2025/03/IMG-20250319-WA0065.jpg')", backgroundSize: "cover", backgroundPosition: "center", paddingBottom: "100%" }} ></div>
-<div class="elementor-gallery-item__overlay"></div>
-<div class="elementor-gallery-item__content">
-</div>
-</a>
-<a class="e-gallery-item elementor-gallery-item elementor-animated-content" data-e-action-hash="#elementor-action%3Aaction%3Dlightbox%26settings%3DeyJpZCI6Mzg1LCJ1cmwiOiJodHRwczpcL1wvYXl1cnZlZGFtZm91bmRhdGlvbi5vcmdcL3dwLWNvbnRlbnRcL3VwbG9hZHNcLzIwMjVcLzAzXC9JTUctMjAyNTAzMTktV0EwMDY0LmpwZyIsInNsaWRlc2hvdyI6IjIwMDhlNGMifQ%3D%3D" data-elementor-lightbox-slideshow="2008e4c" data-elementor-lightbox-title="IMG-20250319-WA0064" data-elementor-open-lightbox="yes" href="/uploads/2025/03/IMG-20250319-WA0064.jpg">
-<div aria-label="" class="e-gallery-image elementor-gallery-item__image e-gallery-image-loaded" data-height="851" data-thumbnail="https://ayurvedamfoundation.org/uploads/2025/03/IMG-20250319-WA0064.jpg" data-width="1280" role="img" style={{ backgroundImage: "url('/uploads/2025/03/IMG-20250319-WA0064.jpg')", backgroundSize: "cover", backgroundPosition: "center", paddingBottom: "100%" }} ></div>
-<div class="elementor-gallery-item__overlay"></div>
-<div class="elementor-gallery-item__content">
-</div>
-</a>
-<a class="e-gallery-item elementor-gallery-item elementor-animated-content" data-e-action-hash="#elementor-action%3Aaction%3Dlightbox%26settings%3DeyJpZCI6Mzg2LCJ1cmwiOiJodHRwczpcL1wvYXl1cnZlZGFtZm91bmRhdGlvbi5vcmdcL3dwLWNvbnRlbnRcL3VwbG9hZHNcLzIwMjVcLzAzXC9JTUctMjAyNTAzMTktV0EwMDYzLmpwZyIsInNsaWRlc2hvdyI6IjIwMDhlNGMifQ%3D%3D" data-elementor-lightbox-slideshow="2008e4c" data-elementor-lightbox-title="IMG-20250319-WA0063" data-elementor-open-lightbox="yes" href="/uploads/2025/03/IMG-20250319-WA0063.jpg">
-<div aria-label="" class="e-gallery-image elementor-gallery-item__image e-gallery-image-loaded" data-height="851" data-thumbnail="https://ayurvedamfoundation.org/uploads/2025/03/IMG-20250319-WA0063.jpg" data-width="1280" role="img" style={{ backgroundImage: "url('/uploads/2025/03/IMG-20250319-WA0063.jpg')", backgroundSize: "cover", backgroundPosition: "center", paddingBottom: "100%" }} ></div>
-<div class="elementor-gallery-item__overlay"></div>
-<div class="elementor-gallery-item__content">
-</div>
-</a>
-<a class="e-gallery-item elementor-gallery-item elementor-animated-content" data-e-action-hash="#elementor-action%3Aaction%3Dlightbox%26settings%3DeyJpZCI6Mzg3LCJ1cmwiOiJodHRwczpcL1wvYXl1cnZlZGFtZm91bmRhdGlvbi5vcmdcL3dwLWNvbnRlbnRcL3VwbG9hZHNcLzIwMjVcLzAzXC9JTUctMjAyNTAzMTktV0EwMDYyLmpwZyIsInNsaWRlc2hvdyI6IjIwMDhlNGMifQ%3D%3D" data-elementor-lightbox-slideshow="2008e4c" data-elementor-lightbox-title="IMG-20250319-WA0062" data-elementor-open-lightbox="yes" href="/uploads/2025/03/IMG-20250319-WA0062.jpg">
-<div aria-label="" class="e-gallery-image elementor-gallery-item__image e-gallery-image-loaded" data-height="851" data-thumbnail="https://ayurvedamfoundation.org/uploads/2025/03/IMG-20250319-WA0062.jpg" data-width="1280" role="img" style={{ backgroundImage: "url('/uploads/2025/03/IMG-20250319-WA0062.jpg')", backgroundSize: "cover", backgroundPosition: "center", paddingBottom: "100%" }} ></div>
-<div class="elementor-gallery-item__overlay"></div>
-<div class="elementor-gallery-item__content">
-</div>
-</a>
-<a class="e-gallery-item elementor-gallery-item elementor-animated-content" data-e-action-hash="#elementor-action%3Aaction%3Dlightbox%26settings%3DeyJpZCI6Mzg4LCJ1cmwiOiJodHRwczpcL1wvYXl1cnZlZGFtZm91bmRhdGlvbi5vcmdcL3dwLWNvbnRlbnRcL3VwbG9hZHNcLzIwMjVcLzAzXC9JTUctMjAyNTAzMTktV0EwMDYxLTEuanBnIiwic2xpZGVzaG93IjoiMjAwOGU0YyJ9" data-elementor-lightbox-slideshow="2008e4c" data-elementor-lightbox-title="IMG-20250319-WA0061 (1)" data-elementor-open-lightbox="yes" href="/uploads/2025/03/IMG-20250319-WA0061-1.jpg">
-<div aria-label="" class="e-gallery-image elementor-gallery-item__image e-gallery-image-loaded" data-height="851" data-thumbnail="https://ayurvedamfoundation.org/uploads/2025/03/IMG-20250319-WA0061-1.jpg" data-width="1280" role="img" style={{ backgroundImage: "url('/uploads/2025/03/IMG-20250319-WA0061-1.jpg')", backgroundSize: "cover", backgroundPosition: "center", paddingBottom: "100%" }} ></div>
-<div class="elementor-gallery-item__overlay"></div>
-<div class="elementor-gallery-item__content">
-</div>
-</a>
-<a class="e-gallery-item elementor-gallery-item elementor-animated-content" data-e-action-hash="#elementor-action%3Aaction%3Dlightbox%26settings%3DeyJpZCI6Mzg5LCJ1cmwiOiJodHRwczpcL1wvYXl1cnZlZGFtZm91bmRhdGlvbi5vcmdcL3dwLWNvbnRlbnRcL3VwbG9hZHNcLzIwMjVcLzAzXC9JTUctMjAyNTAzMTktV0EwMDYwLTEuanBnIiwic2xpZGVzaG93IjoiMjAwOGU0YyJ9" data-elementor-lightbox-slideshow="2008e4c" data-elementor-lightbox-title="IMG-20250319-WA0060 (1)" data-elementor-open-lightbox="yes" href="/uploads/2025/03/IMG-20250319-WA0060-1.jpg">
-<div aria-label="" class="e-gallery-image elementor-gallery-item__image e-gallery-image-loaded" data-height="851" data-thumbnail="https://ayurvedamfoundation.org/uploads/2025/03/IMG-20250319-WA0060-1.jpg" data-width="1280" role="img" style={{ backgroundImage: "url('/uploads/2025/03/IMG-20250319-WA0060-1.jpg')", backgroundSize: "cover", backgroundPosition: "center", paddingBottom: "100%" }} ></div>
-<div class="elementor-gallery-item__overlay"></div>
-<div class="elementor-gallery-item__content">
-</div>
-</a>
-<a class="e-gallery-item elementor-gallery-item elementor-animated-content" data-e-action-hash="#elementor-action%3Aaction%3Dlightbox%26settings%3DeyJpZCI6MzgxLCJ1cmwiOiJodHRwczpcL1wvYXl1cnZlZGFtZm91bmRhdGlvbi5vcmdcL3dwLWNvbnRlbnRcL3VwbG9hZHNcLzIwMjVcLzAzXC9JTUctMjAyNTAzMTktV0EwMDY4LmpwZyIsInNsaWRlc2hvdyI6IjIwMDhlNGMifQ%3D%3D" data-elementor-lightbox-slideshow="2008e4c" data-elementor-lightbox-title="IMG-20250319-WA0068" data-elementor-open-lightbox="yes" href="/uploads/2025/03/IMG-20250319-WA0068.jpg">
-<div aria-label="" class="e-gallery-image elementor-gallery-item__image e-gallery-image-loaded" data-height="853" data-thumbnail="https://ayurvedamfoundation.org/uploads/2025/03/IMG-20250319-WA0068.jpg" data-width="1280" role="img" style={{ backgroundImage: "url('/uploads/2025/03/IMG-20250319-WA0068.jpg')", backgroundSize: "cover", backgroundPosition: "center", paddingBottom: "100%" }} ></div>
-<div class="elementor-gallery-item__overlay"></div>
-<div class="elementor-gallery-item__content">
-</div>
-</a>
-<a class="e-gallery-item elementor-gallery-item elementor-animated-content" data-e-action-hash="#elementor-action%3Aaction%3Dlightbox%26settings%3DeyJpZCI6MzgyLCJ1cmwiOiJodHRwczpcL1wvYXl1cnZlZGFtZm91bmRhdGlvbi5vcmdcL3dwLWNvbnRlbnRcL3VwbG9hZHNcLzIwMjVcLzAzXC9JTUctMjAyNTAzMTktV0EwMDY3LmpwZyIsInNsaWRlc2hvdyI6IjIwMDhlNGMifQ%3D%3D" data-elementor-lightbox-slideshow="2008e4c" data-elementor-lightbox-title="IMG-20250319-WA0067" data-elementor-open-lightbox="yes" href="/uploads/2025/03/IMG-20250319-WA0067.jpg">
-<div aria-label="" class="e-gallery-image elementor-gallery-item__image e-gallery-image-loaded" data-height="853" data-thumbnail="https://ayurvedamfoundation.org/uploads/2025/03/IMG-20250319-WA0067.jpg" data-width="1280" role="img" style={{ backgroundImage: "url('/uploads/2025/03/IMG-20250319-WA0067.jpg')", backgroundSize: "cover", backgroundPosition: "center", paddingBottom: "100%" }} ></div>
-<div class="elementor-gallery-item__overlay"></div>
-<div class="elementor-gallery-item__content">
-</div>
-</a>
-<a class="e-gallery-item elementor-gallery-item elementor-animated-content" data-e-action-hash="#elementor-action%3Aaction%3Dlightbox%26settings%3DeyJpZCI6MzgzLCJ1cmwiOiJodHRwczpcL1wvYXl1cnZlZGFtZm91bmRhdGlvbi5vcmdcL3dwLWNvbnRlbnRcL3VwbG9hZHNcLzIwMjVcLzAzXC9JTUctMjAyNTAzMTktV0EwMDY2LmpwZyIsInNsaWRlc2hvdyI6IjIwMDhlNGMifQ%3D%3D" data-elementor-lightbox-slideshow="2008e4c" data-elementor-lightbox-title="IMG-20250319-WA0066" data-elementor-open-lightbox="yes" href="/uploads/2025/03/IMG-20250319-WA0066.jpg">
-<div aria-label="" class="e-gallery-image elementor-gallery-item__image e-gallery-image-loaded" data-height="1280" data-thumbnail="https://ayurvedamfoundation.org/uploads/2025/03/IMG-20250319-WA0066.jpg" data-width="853" role="img" style={{ backgroundImage: "url('/uploads/2025/03/IMG-20250319-WA0066.jpg')", backgroundSize: "cover", backgroundPosition: "center", paddingBottom: "100%" }} ></div>
-<div class="elementor-gallery-item__overlay"></div>
-<div class="elementor-gallery-item__content">
-</div>
-</a>
-<a class="e-gallery-item elementor-gallery-item elementor-animated-content" data-e-action-hash="#elementor-action%3Aaction%3Dlightbox%26settings%3DeyJpZCI6MzgwLCJ1cmwiOiJodHRwczpcL1wvYXl1cnZlZGFtZm91bmRhdGlvbi5vcmdcL3dwLWNvbnRlbnRcL3VwbG9hZHNcLzIwMjVcLzAzXC9JTUctMjAyNTAzMTktV0EwMDQ2LTIuanBnIiwic2xpZGVzaG93IjoiMjAwOGU0YyJ9" data-elementor-lightbox-slideshow="2008e4c" data-elementor-lightbox-title="IMG-20250319-WA0046 (2)" data-elementor-open-lightbox="yes" href="/uploads/2025/03/IMG-20250319-WA0046-2.jpg">
-<div aria-label="" class="e-gallery-image elementor-gallery-item__image e-gallery-image-loaded" data-height="851" data-thumbnail="https://ayurvedamfoundation.org/uploads/2025/03/IMG-20250319-WA0046-2.jpg" data-width="1280" role="img" style={{ backgroundImage: "url('/uploads/2025/03/IMG-20250319-WA0046-2.jpg')", backgroundSize: "cover", backgroundPosition: "center", paddingBottom: "100%" }} ></div>
-<div class="elementor-gallery-item__overlay"></div>
-<div class="elementor-gallery-item__content">
-</div>
-</a>
-<a class="e-gallery-item elementor-gallery-item elementor-animated-content" data-e-action-hash="#elementor-action%3Aaction%3Dlightbox%26settings%3DeyJpZCI6Mzc4LCJ1cmwiOiJodHRwczpcL1wvYXl1cnZlZGFtZm91bmRhdGlvbi5vcmdcL3dwLWNvbnRlbnRcL3VwbG9hZHNcLzIwMjVcLzAzXC9JTUctMjAyNTAzMTktV0EwMDU5LTEuanBnIiwic2xpZGVzaG93IjoiMjAwOGU0YyJ9" data-elementor-lightbox-slideshow="2008e4c" data-elementor-lightbox-title="IMG-20250319-WA0059 (1)" data-elementor-open-lightbox="yes" href="/uploads/2025/03/IMG-20250319-WA0059-1.jpg">
-<div aria-label="" class="e-gallery-image elementor-gallery-item__image e-gallery-image-loaded" data-height="851" data-thumbnail="https://ayurvedamfoundation.org/uploads/2025/03/IMG-20250319-WA0059-1.jpg" data-width="1280" role="img" style={{ backgroundImage: "url('/uploads/2025/03/IMG-20250319-WA0059-1.jpg')", backgroundSize: "cover", backgroundPosition: "center", paddingBottom: "100%" }} ></div>
-<div class="elementor-gallery-item__overlay"></div>
-<div class="elementor-gallery-item__content">
-</div>
-</a>
-<a class="e-gallery-item elementor-gallery-item elementor-animated-content" data-e-action-hash="#elementor-action%3Aaction%3Dlightbox%26settings%3DeyJpZCI6MzcyLCJ1cmwiOiJodHRwczpcL1wvYXl1cnZlZGFtZm91bmRhdGlvbi5vcmdcL3dwLWNvbnRlbnRcL3VwbG9hZHNcLzIwMjVcLzAzXC9JTUctMjAyNTAzMTktV0EwMDcxLmpwZyIsInNsaWRlc2hvdyI6IjIwMDhlNGMifQ%3D%3D" data-elementor-lightbox-slideshow="2008e4c" data-elementor-lightbox-title="IMG-20250319-WA0071" data-elementor-open-lightbox="yes" href="/uploads/2025/03/IMG-20250319-WA0071.jpg">
-<div aria-label="" class="e-gallery-image elementor-gallery-item__image e-gallery-image-loaded" data-height="851" data-thumbnail="https://ayurvedamfoundation.org/uploads/2025/03/IMG-20250319-WA0071.jpg" data-width="1280" role="img" style={{ backgroundImage: "url('/uploads/2025/03/IMG-20250319-WA0071.jpg')", backgroundSize: "cover", backgroundPosition: "center", paddingBottom: "100%" }} ></div>
-<div class="elementor-gallery-item__overlay"></div>
-<div class="elementor-gallery-item__content">
-</div>
-</a>
-<a class="e-gallery-item elementor-gallery-item elementor-animated-content" data-e-action-hash="#elementor-action%3Aaction%3Dlightbox%26settings%3DeyJpZCI6MzczLCJ1cmwiOiJodHRwczpcL1wvYXl1cnZlZGFtZm91bmRhdGlvbi5vcmdcL3dwLWNvbnRlbnRcL3VwbG9hZHNcLzIwMjVcLzAzXC9JTUctMjAyNTAzMTktV0EwMDcyLmpwZyIsInNsaWRlc2hvdyI6IjIwMDhlNGMifQ%3D%3D" data-elementor-lightbox-slideshow="2008e4c" data-elementor-lightbox-title="IMG-20250319-WA0072" data-elementor-open-lightbox="yes" href="/uploads/2025/03/IMG-20250319-WA0072.jpg">
-<div aria-label="" class="e-gallery-image elementor-gallery-item__image e-gallery-image-loaded" data-height="851" data-thumbnail="https://ayurvedamfoundation.org/uploads/2025/03/IMG-20250319-WA0072.jpg" data-width="1280" role="img" style={{ backgroundImage: "url('/uploads/2025/03/IMG-20250319-WA0072.jpg')", backgroundSize: "cover", backgroundPosition: "center", paddingBottom: "100%" }} ></div>
-<div class="elementor-gallery-item__overlay"></div>
-<div class="elementor-gallery-item__content">
-</div>
-</a>
-<a class="e-gallery-item elementor-gallery-item elementor-animated-content" data-e-action-hash="#elementor-action%3Aaction%3Dlightbox%26settings%3DeyJpZCI6Mzc0LCJ1cmwiOiJodHRwczpcL1wvYXl1cnZlZGFtZm91bmRhdGlvbi5vcmdcL3dwLWNvbnRlbnRcL3VwbG9hZHNcLzIwMjVcLzAzXC9JTUctMjAyNTAzMTktV0EwMDczLmpwZyIsInNsaWRlc2hvdyI6IjIwMDhlNGMifQ%3D%3D" data-elementor-lightbox-slideshow="2008e4c" data-elementor-lightbox-title="IMG-20250319-WA0073" data-elementor-open-lightbox="yes" href="/uploads/2025/03/IMG-20250319-WA0073.jpg">
-<div aria-label="" class="e-gallery-image elementor-gallery-item__image e-gallery-image-loaded" data-height="853" data-thumbnail="https://ayurvedamfoundation.org/uploads/2025/03/IMG-20250319-WA0073.jpg" data-width="1280" role="img" style={{ backgroundImage: "url('/uploads/2025/03/IMG-20250319-WA0073.jpg')", backgroundSize: "cover", backgroundPosition: "center", paddingBottom: "100%" }} ></div>
-<div class="elementor-gallery-item__overlay"></div>
-<div class="elementor-gallery-item__content">
-</div>
-</a>
-<a class="e-gallery-item elementor-gallery-item elementor-animated-content" data-e-action-hash="#elementor-action%3Aaction%3Dlightbox%26settings%3DeyJpZCI6Mzc1LCJ1cmwiOiJodHRwczpcL1wvYXl1cnZlZGFtZm91bmRhdGlvbi5vcmdcL3dwLWNvbnRlbnRcL3VwbG9hZHNcLzIwMjVcLzAzXC9JTUctMjAyNTAzMTktV0EwMDYyLTEuanBnIiwic2xpZGVzaG93IjoiMjAwOGU0YyJ9" data-elementor-lightbox-slideshow="2008e4c" data-elementor-lightbox-title="IMG-20250319-WA0062 (1)" data-elementor-open-lightbox="yes" href="/uploads/2025/03/IMG-20250319-WA0062-1.jpg">
-<div aria-label="" class="e-gallery-image elementor-gallery-item__image e-gallery-image-loaded" data-height="851" data-thumbnail="https://ayurvedamfoundation.org/uploads/2025/03/IMG-20250319-WA0062-1.jpg" data-width="1280" role="img" style={{ backgroundImage: "url('/uploads/2025/03/IMG-20250319-WA0062-1.jpg')", backgroundSize: "cover", backgroundPosition: "center", paddingBottom: "100%" }} ></div>
-<div class="elementor-gallery-item__overlay"></div>
-<div class="elementor-gallery-item__content">
-</div>
-</a>
-<a class="e-gallery-item elementor-gallery-item elementor-animated-content" data-e-action-hash="#elementor-action%3Aaction%3Dlightbox%26settings%3DeyJpZCI6Mzc2LCJ1cmwiOiJodHRwczpcL1wvYXl1cnZlZGFtZm91bmRhdGlvbi5vcmdcL3dwLWNvbnRlbnRcL3VwbG9hZHNcLzIwMjVcLzAzXC9JTUctMjAyNTAzMTktV0EwMDYxLTIuanBnIiwic2xpZGVzaG93IjoiMjAwOGU0YyJ9" data-elementor-lightbox-slideshow="2008e4c" data-elementor-lightbox-title="IMG-20250319-WA0061 (2)" data-elementor-open-lightbox="yes" href="/uploads/2025/03/IMG-20250319-WA0061-2.jpg">
-<div aria-label="" class="e-gallery-image elementor-gallery-item__image e-gallery-image-loaded" data-height="851" data-thumbnail="https://ayurvedamfoundation.org/uploads/2025/03/IMG-20250319-WA0061-2.jpg" data-width="1280" role="img" style={{ backgroundImage: "url('/uploads/2025/03/IMG-20250319-WA0061-2.jpg')", backgroundSize: "cover", backgroundPosition: "center", paddingBottom: "100%" }} ></div>
-<div class="elementor-gallery-item__overlay"></div>
-<div class="elementor-gallery-item__content">
-</div>
-</a>
-<a class="e-gallery-item elementor-gallery-item elementor-animated-content" data-e-action-hash="#elementor-action%3Aaction%3Dlightbox%26settings%3DeyJpZCI6MzcxLCJ1cmwiOiJodHRwczpcL1wvYXl1cnZlZGFtZm91bmRhdGlvbi5vcmdcL3dwLWNvbnRlbnRcL3VwbG9hZHNcLzIwMjVcLzAzXC9JTUctMjAyNTAzMTktV0EwMDc0LmpwZyIsInNsaWRlc2hvdyI6IjIwMDhlNGMifQ%3D%3D" data-elementor-lightbox-slideshow="2008e4c" data-elementor-lightbox-title="IMG-20250319-WA0074" data-elementor-open-lightbox="yes" href="/uploads/2025/03/IMG-20250319-WA0074.jpg">
-<div aria-label="" class="e-gallery-image elementor-gallery-item__image e-gallery-image-loaded" data-height="853" data-thumbnail="https://ayurvedamfoundation.org/uploads/2025/03/IMG-20250319-WA0074.jpg" data-width="1280" role="img" style={{ backgroundImage: "url('/uploads/2025/03/IMG-20250319-WA0074.jpg')", backgroundSize: "cover", backgroundPosition: "center", paddingBottom: "100%" }} ></div>
-<div class="elementor-gallery-item__overlay"></div>
-<div class="elementor-gallery-item__content">
-</div>
-</a>
-<a class="e-gallery-item elementor-gallery-item elementor-animated-content" data-e-action-hash="#elementor-action%3Aaction%3Dlightbox%26settings%3DeyJpZCI6MzcwLCJ1cmwiOiJodHRwczpcL1wvYXl1cnZlZGFtZm91bmRhdGlvbi5vcmdcL3dwLWNvbnRlbnRcL3VwbG9hZHNcLzIwMjVcLzAzXC9JTUctMjAyNTAzMTktV0EwMDc3LmpwZyIsInNsaWRlc2hvdyI6IjIwMDhlNGMifQ%3D%3D" data-elementor-lightbox-slideshow="2008e4c" data-elementor-lightbox-title="IMG-20250319-WA0077" data-elementor-open-lightbox="yes" href="/uploads/2025/03/IMG-20250319-WA0077.jpg">
-<div aria-label="" class="e-gallery-image elementor-gallery-item__image e-gallery-image-loaded" data-height="853" data-thumbnail="https://ayurvedamfoundation.org/uploads/2025/03/IMG-20250319-WA0077.jpg" data-width="1280" role="img" style={{ backgroundImage: "url('/uploads/2025/03/IMG-20250319-WA0077.jpg')", backgroundSize: "cover", backgroundPosition: "center", paddingBottom: "100%" }} ></div>
-<div class="elementor-gallery-item__overlay"></div>
-<div class="elementor-gallery-item__content">
-</div>
-</a>
-<a class="e-gallery-item elementor-gallery-item elementor-animated-content" data-e-action-hash="#elementor-action%3Aaction%3Dlightbox%26settings%3DeyJpZCI6MzY4LCJ1cmwiOiJodHRwczpcL1wvYXl1cnZlZGFtZm91bmRhdGlvbi5vcmdcL3dwLWNvbnRlbnRcL3VwbG9hZHNcLzIwMjVcLzAzXC9JTUctMjAyNTAzMTktV0EwMDc4LmpwZyIsInNsaWRlc2hvdyI6IjIwMDhlNGMifQ%3D%3D" data-elementor-lightbox-slideshow="2008e4c" data-elementor-lightbox-title="IMG-20250319-WA0078" data-elementor-open-lightbox="yes" href="/uploads/2025/03/IMG-20250319-WA0078.jpg">
-<div aria-label="" class="e-gallery-image elementor-gallery-item__image e-gallery-image-loaded" data-height="853" data-thumbnail="https://ayurvedamfoundation.org/uploads/2025/03/IMG-20250319-WA0078.jpg" data-width="1280" role="img" style={{ backgroundImage: "url('/uploads/2025/03/IMG-20250319-WA0078.jpg')", backgroundSize: "cover", backgroundPosition: "center", paddingBottom: "100%" }} ></div>
-<div class="elementor-gallery-item__overlay"></div>
-<div class="elementor-gallery-item__content">
-</div>
-</a>
-<a class="e-gallery-item elementor-gallery-item elementor-animated-content" data-e-action-hash="#elementor-action%3Aaction%3Dlightbox%26settings%3DeyJpZCI6MzY3LCJ1cmwiOiJodHRwczpcL1wvYXl1cnZlZGFtZm91bmRhdGlvbi5vcmdcL3dwLWNvbnRlbnRcL3VwbG9hZHNcLzIwMjVcLzAzXC9JTUctMjAyNTAzMTktV0EwMDc5LTEuanBnIiwic2xpZGVzaG93IjoiMjAwOGU0YyJ9" data-elementor-lightbox-slideshow="2008e4c" data-elementor-lightbox-title="IMG-20250319-WA0079 (1)" data-elementor-open-lightbox="yes" href="/uploads/2025/03/IMG-20250319-WA0079-1.jpg">
-<div aria-label="" class="e-gallery-image elementor-gallery-item__image e-gallery-image-loaded" data-height="853" data-thumbnail="https://ayurvedamfoundation.org/uploads/2025/03/IMG-20250319-WA0079-1.jpg" data-width="1280" role="img" style={{ backgroundImage: "url('/uploads/2025/03/IMG-20250319-WA0079-1.jpg')", backgroundSize: "cover", backgroundPosition: "center", paddingBottom: "100%" }} ></div>
-<div class="elementor-gallery-item__overlay"></div>
-<div class="elementor-gallery-item__content">
-</div>
-</a>
-<a class="e-gallery-item elementor-gallery-item elementor-animated-content" data-e-action-hash="#elementor-action%3Aaction%3Dlightbox%26settings%3DeyJpZCI6MzY2LCJ1cmwiOiJodHRwczpcL1wvYXl1cnZlZGFtZm91bmRhdGlvbi5vcmdcL3dwLWNvbnRlbnRcL3VwbG9hZHNcLzIwMjVcLzAzXC9JTUctMjAyNTAzMTktV0EwMDgzLmpwZyIsInNsaWRlc2hvdyI6IjIwMDhlNGMifQ%3D%3D" data-elementor-lightbox-slideshow="2008e4c" data-elementor-lightbox-title="IMG-20250319-WA0083" data-elementor-open-lightbox="yes" href="/uploads/2025/03/IMG-20250319-WA0083.jpg">
-<div aria-label="" class="e-gallery-image elementor-gallery-item__image e-gallery-image-loaded" data-height="853" data-thumbnail="https://ayurvedamfoundation.org/uploads/2025/03/IMG-20250319-WA0083.jpg" data-width="1280" role="img" style={{ backgroundImage: "url('/uploads/2025/03/IMG-20250319-WA0083.jpg')", backgroundSize: "cover", backgroundPosition: "center", paddingBottom: "100%" }} ></div>
-<div class="elementor-gallery-item__overlay"></div>
-<div class="elementor-gallery-item__content">
-</div>
-</a>
-<a class="e-gallery-item elementor-gallery-item elementor-animated-content" data-e-action-hash="#elementor-action%3Aaction%3Dlightbox%26settings%3DeyJpZCI6MzY1LCJ1cmwiOiJodHRwczpcL1wvYXl1cnZlZGFtZm91bmRhdGlvbi5vcmdcL3dwLWNvbnRlbnRcL3VwbG9hZHNcLzIwMjVcLzAzXC9JTUctMjAyNTAzMTktV0EwMDg0LmpwZyIsInNsaWRlc2hvdyI6IjIwMDhlNGMifQ%3D%3D" data-elementor-lightbox-slideshow="2008e4c" data-elementor-lightbox-title="IMG-20250319-WA0084" data-elementor-open-lightbox="yes" href="/uploads/2025/03/IMG-20250319-WA0084.jpg">
-<div aria-label="" class="e-gallery-image elementor-gallery-item__image e-gallery-image-loaded" data-height="853" data-thumbnail="https://ayurvedamfoundation.org/uploads/2025/03/IMG-20250319-WA0084.jpg" data-width="1280" role="img" style={{ backgroundImage: "url('/uploads/2025/03/IMG-20250319-WA0084.jpg')", backgroundSize: "cover", backgroundPosition: "center", paddingBottom: "100%" }} ></div>
-<div class="elementor-gallery-item__overlay"></div>
-<div class="elementor-gallery-item__content">
-</div>
-</a>
-<a class="e-gallery-item elementor-gallery-item elementor-animated-content" data-e-action-hash="#elementor-action%3Aaction%3Dlightbox%26settings%3DeyJpZCI6MzY0LCJ1cmwiOiJodHRwczpcL1wvYXl1cnZlZGFtZm91bmRhdGlvbi5vcmdcL3dwLWNvbnRlbnRcL3VwbG9hZHNcLzIwMjVcLzAzXC9JTUctMjAyNTAzMTktV0EwMDg1LmpwZyIsInNsaWRlc2hvdyI6IjIwMDhlNGMifQ%3D%3D" data-elementor-lightbox-slideshow="2008e4c" data-elementor-lightbox-title="IMG-20250319-WA0085" data-elementor-open-lightbox="yes" href="/uploads/2025/03/IMG-20250319-WA0085.jpg">
-<div aria-label="" class="e-gallery-image elementor-gallery-item__image e-gallery-image-loaded" data-height="853" data-thumbnail="https://ayurvedamfoundation.org/uploads/2025/03/IMG-20250319-WA0085.jpg" data-width="1280" role="img" style={{ backgroundImage: "url('/uploads/2025/03/IMG-20250319-WA0085.jpg')", backgroundSize: "cover", backgroundPosition: "center", paddingBottom: "100%" }} ></div>
-<div class="elementor-gallery-item__overlay"></div>
-<div class="elementor-gallery-item__content">
-</div>
-</a>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-</section>
+` }} />
+      
+      <GallerySection />
+      
+      <div dangerouslySetInnerHTML={{ __html: `
 </div>
 <footer class="elementor elementor-166 elementor-location-footer" data-elementor-id="166" data-elementor-post-type="elementor_library" data-elementor-type="footer">
 <footer class="elementor-section elementor-top-section elementor-element elementor-element-8dba296 elementor-section-boxed elementor-section-height-default elementor-section-height-default" data-e-type="section" data-element_type="section" data-id="8dba296" data-settings='{"background_background":"classic"}'>
@@ -1303,8 +820,12 @@ img:is([sizes=auto i],[sizes^="auto," i]){contain-intrinsic-size:3000px 1500px}
 </div>
 </div>
 </section>
-</footer>`
+</footer>\`
       }} />
                                                                                                                                                                                                                                                                             </>
+  );
+}
+` }} />
+    </>
   );
 }
