@@ -920,14 +920,13 @@ body::before { content: ""; position: fixed; inset: 0; pointer-events: none; z-i
 @media (max-width: 767px) { .elementor-page-88 .ay-scroll-grid { width: calc(100vw - 24px) !important; } }
 
 /* Complete the final gallery frame before the footer begins. */
-.elementor-page-88 .elementor-location-footer { margin-top: 0 !important; }
 .elementor-page-88 .ay-scroll-stage { overflow: hidden; }
 .elementor-location-footer .elementor-icon-list-text { white-space: normal; }
 /* The archive measures its own columns, so future admin uploads always receive enough scroll distance. */
-.elementor-page-88 .ay-scroll-gallery { min-height: var(--ay-gallery-height, 360vh) !important; overflow: visible !important; }
+.elementor-page-88 .ay-scroll-gallery { min-height: var(--ay-gallery-height, 360vh) !important; overflow: visible !important; padding-bottom: 64px; }
 .elementor-page-88 .ay-scroll-stage { overflow: visible !important; }
 body:has(.elementor-page-88) .elementor-location-footer,
-.elementor-page-88 + .elementor-location-footer { margin-top: 0 !important; }
+.elementor-page-88 + .elementor-location-footer { margin-top: clamp(32px, 4vw, 48px) !important; }
 
 /* Force Inter on everything except icon font classes and custom SVGs */
 html, body, p, h1, h2, h3, h4, h5, h6, li, button, input, select, textarea,
