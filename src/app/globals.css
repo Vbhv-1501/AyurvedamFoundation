@@ -396,7 +396,7 @@ body::before { content: ""; position: fixed; inset: 0; pointer-events: none; z-i
 .elementor-widget-container .elementor-post:hover, .elementor-widget-container .elementor-grid-item:hover, .elementor-widget-image-box:hover, .elementor-widget-icon-box:hover { transform: translateY(-7px); box-shadow: 0 18px 35px rgba(67, 22, 39, .12); }
 
 /* Shared footer reads as a closing signature, with the original links untouched. */
-.elementor-location-footer { margin-top: 0; border-top: 5px solid var(--agency-gold); }
+.elementor-location-footer { margin-top: clamp(32px, 4vw, 48px); border-top: 5px solid var(--agency-gold); }
 .elementor-location-footer .elementor-top-section:first-child { background: var(--agency-ink) !important; }
 .elementor-location-footer .elementor-heading-title { color: #f4d9ae !important; letter-spacing: .12em; font-family: "Jost", sans-serif !important; font-size: 11px !important; }
 .elementor-location-footer a { transition: color .2s ease, padding-left .2s ease; }
