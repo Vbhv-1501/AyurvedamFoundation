@@ -384,7 +384,7 @@ function OrganiserCard({
           <div className="bead-rim" />
           <div className="shine" />
           <div className="photo-wrap">
-            {!imgFailed && organiser.image && (
+            {(!imgFailed && organiser.image && !organiser.image.includes("placehold")) ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img
                 src={organiser.image}
@@ -392,8 +392,9 @@ function OrganiserCard({
                 onError={() => setImgFailed(true)}
                 style={organiser.objectPosition ? { objectPosition: organiser.objectPosition } : undefined}
               />
+            ) : (
+              <img src="/uploads/2025/03/Untitled-design-6-e1742823184130.png" alt="Ayurvedam Foundation Logo" style={{ objectFit: "contain", padding: "12%", width: "100%", height: "100%", display: "block" }} />
             )}
-            {(imgFailed || !organiser.image) && <div className="initials">{organiser.initials}</div>}
           </div>
         </div>
 
@@ -467,11 +468,12 @@ function MemberCard({ member, gradientId, index }: { member: Member; gradientId:
           <div className="bead-rim" />
           <div className="shine" />
           <div className="photo-wrap">
-            {!imgFailed && member.image && (
+            {(!imgFailed && member.image && !member.image.includes("placehold")) ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img src={member.image} alt={member.name} onError={() => setImgFailed(true)} />
+            ) : (
+              <img src="/uploads/2025/03/Untitled-design-6-e1742823184130.png" alt="Ayurvedam Foundation Logo" style={{ objectFit: "contain", padding: "12%", width: "100%", height: "100%", display: "block" }} />
             )}
-            {(imgFailed || !member.image) && <div className="initials">{member.initials}</div>}
           </div>
         </div>
 
@@ -1475,6 +1477,10 @@ img:is([sizes=auto i],[sizes^="auto," i]){contain-intrinsic-size:3000px 1500px}
     width: 100%;
     background: linear-gradient(180deg, var(--bg-1), var(--bg-2));
     padding-bottom: 60px;
+  }
+
+  .elementor-location-footer {
+    margin-top: 0 !important;
   }
 
   .organisers {

@@ -1531,10 +1531,10 @@ function AmbassadorCard({ coord, stateName, index }: { coord: Coordinator; state
           <div className="bead-rim" />
           <div className="shine" />
           <div className="photo-wrap">
-            {!photoFailed && coord.image ? (
+            {(!photoFailed && coord.image && !coord.image.includes("placehold")) ? (
               <img src={coord.image} alt={coord.name} onError={() => setPhotoFailed(true)} />
             ) : (
-              <div className="initials">{coord.initials}</div>
+              <img src="/uploads/2025/03/Untitled-design-6-e1742823184130.png" alt="Ayurvedam Foundation Logo" style={{ objectFit: "contain", padding: "12%", width: "100%", height: "100%", display: "block" }} />
             )}
           </div>
         </div>
@@ -1623,6 +1623,10 @@ function StateAmbassadorsSection() {
           overflow: hidden;
           font-family: "Poppins", sans-serif;
           color: var(--ink);
+        }
+
+        .elementor-location-footer {
+          margin-top: 0 !important;
         }
 
         .ambassadors-section {

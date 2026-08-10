@@ -1658,10 +1658,10 @@ function PartnerCard({ partner, index }: { partner: Partner; index: number }) {
           <div className="bead-rim" />
           <div className="shine" />
           <div className="photo-wrap">
-            {!photoFailed && partner.personImage ? (
+            {(!photoFailed && partner.personImage && !partner.personImage.includes("placehold")) ? (
               <img src={partner.personImage} alt={partner.name} onError={() => setPhotoFailed(true)} />
             ) : (
-              <div className="initials">{partner.personInitials}</div>
+              <img src="/uploads/2025/03/Untitled-design-6-e1742823184130.png" alt="Ayurvedam Foundation Logo" style={{ objectFit: "contain", padding: "12%", width: "100%", height: "100%", display: "block" }} />
             )}
           </div>
         </div>
@@ -1727,10 +1727,10 @@ function AdvisorCard({ advisor, index }: { advisor: Advisor; index: number }) {
           <div className="bead-rim" />
           <div className="shine" />
           <div className="photo-wrap">
-            {!photoFailed && advisor.image ? (
+            {(!photoFailed && advisor.image && !advisor.image.includes("placehold")) ? (
               <img src={advisor.image} alt={advisor.name} onError={() => setPhotoFailed(true)} />
             ) : (
-              <div className="initials">{advisor.initials}</div>
+              <img src="/uploads/2025/03/Untitled-design-6-e1742823184130.png" alt="Ayurvedam Foundation Logo" style={{ objectFit: "contain", padding: "12%", width: "100%", height: "100%", display: "block" }} />
             )}
           </div>
         </div>
@@ -1819,6 +1819,10 @@ function PartnersAndAdvisorySection() {
           overflow: hidden;
           font-family: "Poppins", sans-serif;
           color: var(--ink);
+        }
+
+        .elementor-location-footer {
+          margin-top: 0 !important;
         }
 
         .partners-section, .advisory-section {
