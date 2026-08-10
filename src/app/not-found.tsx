@@ -1,5 +1,6 @@
 "use client";
 
+import Link from 'next/link';
 import BodyClassManager from '@/components/BodyClassManager';
 
 export default function NotFound() {
@@ -234,12 +235,12 @@ export default function NotFound() {
             The page you are looking for has departed, much like an unbalanced dosha. Let us guide you back to the path of wellness and learning.
           </p>
           <div className="not-found-ctas">
-            <a href="/" className="btn-primary">
+            <Link href="/" className="btn-primary">
               🏠 Return Home
-            </a>
-            <a href="/contact-us" className="btn-ghost">
+            </Link>
+            <Link href="/contact-us" className="btn-ghost">
               Contact Us ↗
-            </a>
+            </Link>
           </div>
         </div>
       </div>

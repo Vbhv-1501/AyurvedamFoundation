@@ -1,10 +1,501 @@
+"use client";
+
+import React, { useEffect, useRef, useState } from "react";
 import BodyClassManager from '@/components/BodyClassManager';
+
+type Organiser = {
+  id: string;
+  name: string;
+  role: string;
+  phone: string;
+  image: string;
+  initials: string;
+  founder?: boolean;
+  objectPosition?: string;
+};
+
+const ORGANISERS: Organiser[] = [
+  {
+    "id": "brijesh-prajapati",
+    "name": "Vd. Brijesh Prajapati",
+    "role": "Founder",
+    "phone": "+91 63910 53105",
+    "image": "/uploads/2026/06/Vd.-Brijesh.jpeg",
+    "initials": "BP",
+    "founder": true
+  },
+  {
+    "id": "roopesh-jauhari",
+    "name": "Vd. Roopesh Jauhari",
+    "role": "Director",
+    "phone": "+91 91400 13151",
+    "image": "/uploads/2026/06/Vd.-Roopesh-Jauhari-In-Nehru-Jacket--scaled.jpg",
+    "initials": "RJ"
+  },
+  {
+    "id": "awadh-raj-shukla",
+    "name": "Vd. Awadh Raj Shukla",
+    "role": "Director",
+    "phone": "+91 95804 90006",
+    "image": "/uploads/2026/06/Vd.-Awadh-RAJ-Shukla-scaled.jpg",
+    "initials": "AS",
+    "objectPosition": "center 15%"
+  },
+  {
+    "id": "karan-gupta",
+    "name": "Vd. Karan Gupta",
+    "role": "Director",
+    "phone": "+91 76074 96051",
+    "image": "/uploads/2026/06/vD.-kARAN-GUPTA.png",
+    "initials": "KG",
+    "objectPosition": "center 12%"
+  },
+  {
+    "id": "shubham-sharma",
+    "name": "Vd. Shubham Sharma",
+    "role": "Director",
+    "phone": "+91 96163 65088",
+    "image": "/uploads/2026/06/Vd.-Shubham-Sharma-Director-Ayurvedam-Foundation-%F0%9F%93%9E-91-9616365088.jpeg",
+    "initials": "SS"
+  }
+];
+
+type Member = {
+  id: string;
+  name: string;
+  phone: string;
+  image: string;
+  initials: string;
+};
+
+const MEMBERS: Member[] = [
+  {
+    "id": "pooja",
+    "name": "Vd. Pooja",
+    "phone": "+91 89576 04094",
+    "image": "/uploads/2026/06/Vait_andya-Pooja-scaled.jpeg",
+    "initials": "P"
+  },
+  {
+    "id": "pratik-yadav",
+    "name": "Vd. Pratik Yadav",
+    "phone": "+91 94557 41299",
+    "image": "/uploads/2026/06/Vd.-Pratik-Yadav-%F0%9F%93%9E-91-9455741299-scaled.jpeg",
+    "initials": "PY"
+  },
+  {
+    "id": "sandhya-yadav",
+    "name": "Vd. Sandhya K. Yadav",
+    "phone": "+91 87260 29327",
+    "image": "/uploads/2026/06/Vd.-Sandhya-Kailash-Yadav%F0%9F%93%9E-91-8726029327.jpeg",
+    "initials": "SY"
+  },
+  {
+    "id": "arjun-gupta",
+    "name": "Vd. Arjun Gupta",
+    "phone": "+91 75994 67075",
+    "image": "/uploads/2026/06/Vd.-Arjun-Gupta-in-Nehru-Jacket-scaled.jpg",
+    "initials": "AG"
+  },
+  {
+    "id": "abhishek-prajapati",
+    "name": "Vd. Abhishek Prajapati",
+    "phone": "+91 79067 75639",
+    "image": "/uploads/2026/06/Vd.-Abhay-Singh.jpg",
+    "initials": "AP"
+  },
+  {
+    "id": "payal-tiwari",
+    "name": "Vd. Payal Tiwari",
+    "phone": "+91 73929 03366",
+    "image": "",
+    "initials": "P"
+  },
+  {
+    "id": "aditi-nandal",
+    "name": "Vd. Aditi Nandal",
+    "phone": "+91 95182 79058",
+    "image": "/uploads/2026/06/Vd.-Aditi-Nandal-%F0%9F%93%9E-91-9518279058.png",
+    "initials": "AN"
+  },
+  {
+    "id": "prabhat-sharma",
+    "name": "Vd. Prabhat Sharma",
+    "phone": "+91 74808 77092",
+    "image": "/uploads/2026/06/Vd.-Prabhat-Sharma-scaled.jpeg",
+    "initials": "PS"
+  },
+  {
+    "id": "shivam-bhardwaj",
+    "name": "Vd. Shivam Bhardwaj",
+    "phone": "+91 94501 33516",
+    "image": "/uploads/2026/06/Vd.-Shivam-Bhardwaj-%F0%9F%93%9E-91-9450133516.jpeg",
+    "initials": "SB"
+  },
+  {
+    "id": "abhay-singh",
+    "name": "Vd. Abhay Singh",
+    "phone": "+91 99362 26238",
+    "image": "/uploads/2026/06/Vd.-Abhay-Singh.jpg",
+    "initials": "AS"
+  },
+  {
+    "id": "shubham-gupta",
+    "name": "Vd. Shubham Gupta",
+    "phone": "+91 95547 11130",
+    "image": "/uploads/2026/06/Vd.-Shubham-Gupta-%F0%9F%93%9E-91-9554711130.dng",
+    "initials": "SG"
+  },
+  {
+    "id": "kajal-adhikari",
+    "name": "Vd. Kajal Adhikari",
+    "phone": "+91 95609 40734",
+    "image": "/uploads/2026/06/Vd.-Kajal-Adhikari-%E2%80%93-91-95609-40734.jpeg",
+    "initials": "KA"
+  },
+  {
+    "id": "nitika-saini",
+    "name": "Vd. Nitika Saini",
+    "phone": "+91 70183 05727",
+    "image": "/uploads/2026/06/Vd.-Nitika-Saini-%E2%80%93-91-70183-05727.jpeg",
+    "initials": "NS"
+  },
+  {
+    "id": "seema-bunkar",
+    "name": "Vd. Seema Bunkar",
+    "phone": "+91 91729 69027",
+    "image": "/uploads/2026/06/Vd.-Seema-Bunkar-%E2%80%93-91-91729-6902734-scaled.jpeg",
+    "initials": "SB"
+  },
+  {
+    "id": "astha-verma",
+    "name": "Vd. Astha Verma",
+    "phone": "+91 95281 44056",
+    "image": "/uploads/2026/06/Vd.-Astha-Verma-91-95281-44056.jpeg",
+    "initials": "AV"
+  },
+  {
+    "id": "namrta-yadav",
+    "name": "Vd. Namrta Yadav",
+    "phone": "+91 70393 16989",
+    "image": "/uploads/2026/06/Vd.-Namrta-Yadav-scaled.jpg",
+    "initials": "NY"
+  },
+  {
+    "id": "shailza-sharma",
+    "name": "Vd. Shailza Sharma",
+    "phone": "+91 93063 53239",
+    "image": "/uploads/2026/06/Vd.-Shailza-Sharma-91-93063-53239.jpeg",
+    "initials": "SS"
+  },
+  {
+    "id": "anjali-garg",
+    "name": "Vd. Anjali Garg",
+    "phone": "+91 78141 68390",
+    "image": "/uploads/2026/06/Dr.-Anjali-Garg-7814168390.png",
+    "initials": "AG"
+  },
+  {
+    "id": "brijesh-patel",
+    "name": "Vd. Brijesh Patel",
+    "phone": "+91 62630 38442",
+    "image": "/uploads/2026/06/Vd.-Brajesh-Patel.png",
+    "initials": "BP"
+  },
+  {
+    "id": "harsh-bansal",
+    "name": "Vd. Harsh Bansal",
+    "phone": "+91 99270 69634",
+    "image": "/uploads/2026/06/Vd.-Harsh-Bansal-%E2%80%93-91-99270-69634.jpeg",
+    "initials": "HB"
+  },
+  {
+    "id": "apoorv-tripathi",
+    "name": "Vd. Apoorv Tripathi",
+    "phone": "+91 87340 13392",
+    "image": "/uploads/2026/06/Vd.-Apoorva-Tripathi-scaled.jpg",
+    "initials": "AT"
+  },
+  {
+    "id": "arjun-nanda",
+    "name": "Vd. Arjun Nanda",
+    "phone": "+91 84450 50131",
+    "image": "/uploads/2026/06/Vd.-Arjun-Nanda-91-84450-50131.jpeg",
+    "initials": "AN"
+  },
+  {
+    "id": "priyansh-shuwalka",
+    "name": "Vd. Priyansh Shuwalka",
+    "phone": "+91 63677 53817",
+    "image": "/uploads/2026/06/Priyansh-Shuwalka.png",
+    "initials": "PS"
+  },
+  {
+    "id": "shubham-suxena",
+    "name": "Vd. Shubham Suxena",
+    "phone": "+91 99346 23560",
+    "image": "/uploads/2026/06/Vd.-Shubham-Suxena-%E2%80%93-91-99346-23560-1.jpeg",
+    "initials": "SS"
+  },
+  {
+    "id": "saikiran",
+    "name": "Vd. Saikiran",
+    "phone": "+91 93595 58503",
+    "image": "/uploads/2026/06/Vd.-Saikiran-%E2%80%93-91-93595-58503.jpeg",
+    "initials": "S"
+  },
+  {
+    "id": "vikrant-tripathi",
+    "name": "Vd. Vikrant Tripathi",
+    "phone": "+91 89539 20558",
+    "image": "/uploads/2026/06/Vd.-Vikrant-Tripathi-%E2%80%93-91-89539-20558-scaled.jpeg",
+    "initials": "VT"
+  },
+  {
+    "id": "vinay-bhanu-singh",
+    "name": "Vd. Vinay Bhanu Singh",
+    "phone": "+91 94533 81438",
+    "image": "/uploads/2026/06/Vd.-Vinay-Bhanu-Singh-scaled.jpg",
+    "initials": "VB"
+  },
+  {
+    "id": "vikki-kumar",
+    "name": "Vd. Vikki Kumar",
+    "phone": "+91 96286 29274",
+    "image": "/uploads/2026/06/Vd.-Vikki-Kumar-91-96286-29274.jpeg",
+    "initials": "VK"
+  },
+  {
+    "id": "aditya-singh",
+    "name": "Vd. Aditya Singh",
+    "phone": "+91 78803 18418",
+    "image": "/uploads/2026/06/Vd.-Aditya-Singh-91-78803-18418.png",
+    "initials": "AS"
+  },
+  {
+    "id": "rahul-kaushik",
+    "name": "Vd. Rahul Kaushik",
+    "phone": "+91 96915 27004",
+    "image": "/uploads/2026/06/Rahul-Kaushik-9691527004-scaled.jpeg",
+    "initials": "RK"
+  },
+  {
+    "id": "manish-kumar",
+    "name": "Vd. Manish Kumar",
+    "phone": "+91 62894 06425",
+    "image": "/uploads/2026/06/Vd.-Manish-Kumar-Taking-Award-1-1-scaled.jpg",
+    "initials": "MK"
+  }
+];
+
+const SCALLOP_PATH_CORE = "M 142.0,74.0 L 141.46,75.77 L 139.92,77.45 L 137.66,79.01 L 135.04,80.42 L 132.5,81.7 L 130.44,82.94 L 129.19,84.23 L 128.9,85.67 L 129.57,87.34 L 130.99,89.27 L 132.85,91.43 L 134.73,93.73 L 136.23,96.04 L 137.0,98.18 L 136.82,100.02 L 135.65,101.45 L 133.58,102.42 L 130.89,102.99 L 127.94,103.28 L 125.1,103.5 L 122.72,103.86 L 121.08,104.57 L 120.26,105.79 L 120.23,107.59 L 120.81,109.92 L 121.7,112.62 L 122.56,115.47 L 123.06,118.17 L 122.95,120.45 L 122.08,122.08 L 120.45,122.95 L 118.17,123.06 L 115.47,122.56 L 112.62,121.7 L 109.92,120.81 L 107.59,120.23 L 105.79,120.26 L 104.57,121.08 L 103.86,122.72 L 103.5,125.1 L 103.28,127.94 L 102.99,130.89 L 102.42,133.58 L 101.45,135.65 L 100.02,136.82 L 98.18,137.0 L 96.04,136.23 L 93.73,134.73 L 91.43,132.85 L 89.27,130.99 L 87.34,129.57 L 85.67,128.9 L 84.23,129.19 L 82.94,130.44 L 81.7,132.5 L 80.42,135.04 L 79.01,137.66 L 77.45,139.92 L 75.77,141.46 L 74.0,142.0 L 72.23,141.46 L 70.55,139.92 L 68.99,137.66 L 67.58,135.04 L 66.3,132.5 L 65.06,130.44 L 63.77,129.19 L 62.33,128.9 L 60.66,129.57 L 58.73,130.99 L 56.57,132.85 L 54.27,134.73 L 51.96,136.23 L 49.82,137.0 L 47.98,136.82 L 46.55,135.65 L 45.58,133.58 L 45.01,130.89 L 44.72,127.94 L 44.5,125.1 L 44.14,122.72 L 43.43,121.08 L 42.21,120.26 L 40.41,120.23 L 38.08,120.81 L 35.38,121.7 L 32.53,122.56 L 29.83,123.06 L 27.55,122.95 L 25.92,122.08 L 25.05,120.45 L 24.94,118.17 L 25.44,115.47 L 26.3,112.62 L 27.19,109.92 L 27.77,107.59 L 27.74,105.79 L 26.92,104.57 L 25.28,103.86 L 22.9,103.5 L 20.06,103.28 L 17.11,102.99 L 14.42,102.42 L 12.35,101.45 L 11.18,100.02 L 11.0,98.18 L 11.77,96.04 L 13.27,93.73 L 15.15,91.43 L 17.01,89.27 L 18.43,87.34 L 19.1,85.67 L 18.81,84.23 L 17.56,82.94 L 15.5,81.7 L 12.96,80.42 L 10.34,79.01 L 8.08,77.45 L 6.54,75.77 L 6.0,74.0 L 6.54,72.23 L 8.08,70.55 L 10.34,68.99 L 12.96,67.58 L 15.5,66.3 L 17.56,65.06 L 18.81,63.77 L 19.1,62.33 L 18.43,60.66 L 17.01,58.73 L 15.15,56.57 L 13.27,54.27 L 11.77,51.96 L 11.0,49.82 L 11.18,47.98 L 12.35,46.55 L 14.42,45.58 L 17.11,45.01 L 20.06,44.72 L 22.9,44.5 L 25.28,44.14 L 26.92,43.43 L 27.74,42.21 L 27.77,40.41 L 27.19,38.08 L 26.3,35.38 L 25.44,32.53 L 24.94,29.83 L 25.05,27.55 L 25.92,25.92 L 27.55,25.05 L 29.83,24.94 L 32.53,25.44 L 35.38,26.3 L 38.08,27.19 L 40.41,27.77 L 42.21,27.74 L 43.43,26.92 L 44.14,25.28 L 44.5,22.9 L 44.72,20.06 L 45.01,17.11 L 45.58,14.42 L 46.55,12.35 L 47.98,11.18 L 49.82,11.0 L 51.96,11.77 L 54.27,13.27 L 56.57,15.15 L 58.73,17.01 L 60.66,18.43 L 62.33,19.1 L 63.77,18.81 L 65.06,17.56 L 66.3,15.5 L 67.58,12.96 L 68.99,10.34 L 70.55,8.08 L 72.23,6.54 L 74.0,6.0 L 75.77,6.54 L 77.45,8.08 L 79.01,10.34 L 80.42,12.96 L 81.7,15.5 L 82.94,17.56 L 84.23,18.81 L 85.67,19.1 L 87.34,18.43 L 89.27,17.01 L 91.43,15.15 L 93.73,13.27 L 96.04,11.77 L 98.18,11.0 L 100.02,11.18 L 101.45,12.35 L 102.42,14.42 L 102.99,17.11 L 103.28,20.06 L 103.5,22.9 L 103.86,25.28 L 104.57,26.92 L 105.79,27.74 L 107.59,27.77 L 109.92,27.19 L 112.62,26.3 L 115.47,25.44 L 118.17,24.94 L 120.45,25.05 L 122.08,25.92 L 122.95,27.55 L 123.06,29.83 L 122.56,32.53 L 121.7,35.38 L 120.81,38.08 L 120.23,40.41 L 120.26,42.21 L 121.08,43.43 L 122.72,44.14 L 125.1,44.5 L 127.94,44.72 L 130.89,45.01 L 133.58,45.58 L 135.65,46.55 L 136.82,47.98 L 137.0,49.82 L 136.23,51.96 L 134.73,54.27 L 132.85,56.57 L 130.99,58.73 L 129.57,60.66 L 128.9,62.33 L 129.19,63.77 L 130.44,65.06 L 132.5,66.3 L 135.04,67.58 L 137.66,68.99 L 139.92,70.55 L 141.46,72.23 L 142.0,74.0 Z";
+
+const SCALLOP_PATH_MEMBER = "M 96.0,50.0 L 95.48,51.43 L 94.06,52.77 L 92.06,53.98 L 89.98,55.05 L 88.29,56.06 L 87.36,57.13 L 87.36,58.35 L 88.21,59.81 L 89.61,61.51 L 91.12,63.36 L 92.26,65.21 L 92.65,66.89 L 92.1,68.22 L 90.64,69.12 L 88.52,69.63 L 86.15,69.87 L 83.96,70.08 L 82.32,70.51 L 81.46,71.38 L 81.36,72.78 L 81.84,74.7 L 82.56,76.93 L 83.11,79.19 L 83.17,81.15 L 82.53,82.53 L 81.15,83.17 L 79.19,83.11 L 76.93,82.56 L 74.7,81.84 L 72.78,81.36 L 71.38,81.46 L 70.51,82.32 L 70.08,83.96 L 69.87,86.15 L 69.87,88.52 L 69.12,90.64 L 68.22,92.1 L 66.89,92.65 L 65.21,92.26 L 63.36,91.12 L 61.51,89.61 L 59.81,88.21 L 58.35,87.36 L 57.13,87.36 L 56.06,88.29 L 55.05,89.98 L 53.98,92.06 L 52.77,94.06 L 51.43,95.48 L 50.0,96.0 L 48.57,95.48 L 47.23,94.06 L 46.02,92.06 L 44.95,89.98 L 43.94,88.29 L 42.87,87.36 L 41.65,87.36 L 40.19,88.21 L 38.49,89.61 L 36.64,91.12 L 34.79,92.26 L 33.11,92.65 L 31.78,92.1 L 30.88,90.64 L 30.37,88.52 L 30.13,86.15 L 29.92,83.96 L 29.49,82.32 L 28.62,81.46 L 27.22,81.36 L 25.3,81.84 L 23.07,82.56 L 20.81,83.11 L 18.85,83.17 L 17.47,82.53 L 16.83,81.15 L 16.89,79.19 L 17.44,76.93 L 18.16,74.7 L 18.64,72.78 L 18.54,71.38 L 17.68,70.51 L 16.04,70.08 L 13.85,69.87 L 11.48,69.63 L 9.36,69.12 L 7.9,68.22 L 7.35,66.89 L 7.74,65.21 L 8.88,63.36 L 10.39,61.51 L 11.79,59.81 L 12.64,58.35 L 12.64,57.13 L 11.71,56.06 L 10.02,55.05 L 7.94,53.98 L 5.94,52.77 L 4.52,51.43 L 4.0,50.0 L 4.52,48.57 L 5.94,47.23 L 7.94,46.02 L 10.02,44.95 L 11.71,43.94 L 12.64,42.87 L 12.64,41.65 L 11.79,40.19 L 10.39,38.49 L 8.88,36.64 L 7.74,34.79 L 7.35,33.11 L 7.9,31.78 L 9.36,30.88 L 11.48,30.37 L 13.85,30.13 L 16.04,29.92 L 17.68,29.49 L 18.54,28.62 L 18.64,27.22 L 18.16,25.3 L 17.44,23.07 L 16.89,20.81 L 16.83,18.85 L 17.47,17.47 L 18.85,16.83 L 20.81,16.89 L 23.07,17.44 L 25.3,18.16 L 27.22,18.64 L 28.62,18.54 L 29.49,17.68 L 29.92,16.04 L 30.13,13.85 L 30.37,11.48 L 30.88,9.36 L 31.78,7.9 L 33.11,7.35 L 34.79,7.74 L 36.64,8.88 L 38.49,10.39 L 40.19,11.79 L 41.65,12.64 L 42.87,12.64 L 43.94,11.71 L 44.95,10.02 L 46.02,7.94 L 47.23,5.94 L 48.57,4.52 L 50.0,4.0 L 51.43,4.52 L 52.77,5.94 L 53.98,7.94 L 55.05,10.02 L 56.06,11.71 L 57.13,12.64 L 58.35,12.64 L 59.81,11.79 L 61.51,10.39 L 63.36,8.88 L 65.21,7.74 L 66.89,7.35 L 68.22,7.9 L 69.12,9.36 L 69.63,11.48 L 69.87,13.85 L 70.08,16.04 L 70.51,17.68 L 71.38,18.54 L 72.78,18.64 L 74.7,18.16 L 76.93,17.44 L 79.19,16.89 L 81.15,16.83 L 82.53,17.47 L 83.17,18.85 L 83.11,20.81 L 82.56,23.07 L 81.84,25.3 L 81.36,27.22 L 81.46,28.62 L 82.32,29.49 L 83.96,29.92 L 86.15,30.13 L 88.52,30.37 L 90.64,30.88 L 92.1,31.78 L 92.65,33.11 L 92.26,34.79 L 91.12,36.64 L 89.61,38.49 L 88.21,40.19 L 87.36,41.65 L 87.36,42.87 L 88.29,43.94 L 89.98,44.95 L 92.06,46.02 L 94.06,47.23 L 95.48,48.57 L 96.0,50.0 Z";
+
+function useInView<T extends HTMLElement>(margin = "0px") {
+  const ref = useRef<T | null>(null);
+  const [inView, setInView] = useState(false);
+
+  useEffect(() => {
+    const node = ref.current;
+    if (!node) return;
+
+    if (!("IntersectionObserver" in window)) {
+      const frame = requestAnimationFrame(() => setInView(true));
+      return () => cancelAnimationFrame(frame);
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setInView(true);
+          observer.unobserve(node);
+        }
+      },
+      { threshold: 0.15, rootMargin: "0px 0px " + margin + " 0px" }
+    );
+
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, [margin]);
+
+  return { ref, inView };
+}
+
+function OrganiserCard({
+  organiser,
+  gradientId,
+  index,
+}: {
+  organiser: Organiser;
+  gradientId: string;
+  index: number;
+}) {
+  const { ref, inView } = useInView<HTMLDivElement>("-40px");
+  const [imgFailed, setImgFailed] = useState(false);
+  const [tilt, setTilt] = useState({ x: 0, y: 0 });
+
+  function handleMouseMove(e: React.MouseEvent<HTMLDivElement>) {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const px = (e.clientX - rect.left) / rect.width;
+    const py = (e.clientY - rect.top) / rect.height;
+    setTilt({
+      x: (px - 0.5) * 14,
+      y: -(py - 0.5) * 14,
+    });
+  }
+
+  function handleMouseLeave() {
+    setTilt({ x: 0, y: 0 });
+  }
+
+  return (
+    <div
+      ref={ref}
+      className={"card " + (inView ? "in-view" : "")}
+      style={{ transitionDelay: (index * 70) + "ms" }}
+    >
+      <div
+        className="card-inner"
+        onMouseMove={handleMouseMove}
+        onMouseLeave={handleMouseLeave}
+        style={
+          {
+            "--tiltX": tilt.x + "deg",
+            "--tiltY": tilt.y + "deg",
+          } as React.CSSProperties
+        }
+      >
+        {organiser.founder && <span className="founder-tag">FOUNDER</span>}
+
+        <div className="medallion">
+          <svg className="scallop" viewBox="0 0 148 148" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id={gradientId} x1="10%" y1="0%" x2="90%" y2="100%">
+                <stop offset="0%" stopColor="#FCEBC0" />
+                <stop offset="35%" stopColor="#E8C077" />
+                <stop offset="70%" stopColor="#B8862E" />
+                <stop offset="100%" stopColor="#6E4A14" />
+              </linearGradient>
+            </defs>
+            <path d={SCALLOP_PATH_CORE} fill={"url(#" + gradientId + ")"} />
+          </svg>
+          <div className="bevel-ring" />
+          <div className="bead-rim" />
+          <div className="shine" />
+          <div className="photo-wrap">
+            {!imgFailed && organiser.image && (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={organiser.image}
+                alt={organiser.name}
+                onError={() => setImgFailed(true)}
+                style={organiser.objectPosition ? { objectPosition: organiser.objectPosition } : undefined}
+              />
+            )}
+            {(imgFailed || !organiser.image) && <div className="initials">{organiser.initials}</div>}
+          </div>
+        </div>
+
+        <h3 className="name">
+          {organiser.name.split(" ").map((word, i, arr) => (
+            <span key={i}>
+              {word}
+              {i < arr.length - 1 ? " " : ""}
+            </span>
+          ))}
+        </h3>
+        <p className="role">{organiser.role}</p>
+
+        <a className="phone" href={"tel:" + organiser.phone.replace(/s+/g, "")}>
+          <svg viewBox="0 0 24 24">
+            <path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.5.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C10.9 21 3 13.1 3 3.1c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.2.2 2.4.6 3.5.1.4 0 .8-.2 1L6.6 10.8z" />
+          </svg>
+          {organiser.phone}
+        </a>
+      </div>
+    </div>
+  );
+}
+
+function MemberCard({ member, gradientId, index }: { member: Member; gradientId: string; index: number }) {
+  const { ref, inView } = useInView<HTMLDivElement>("-40px");
+  const [imgFailed, setImgFailed] = useState(false);
+  const [tilt, setTilt] = useState({ x: 0, y: 0 });
+
+  function handleMouseMove(e: React.MouseEvent<HTMLDivElement>) {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const px = (e.clientX - rect.left) / rect.width;
+    const py = (e.clientY - rect.top) / rect.height;
+    setTilt({ x: (px - 0.5) * 8, y: -(py - 0.5) * 8 });
+  }
+
+  function handleMouseLeave() {
+    setTilt({ x: 0, y: 0 });
+  }
+
+  return (
+    <div
+      ref={ref}
+      className={"card " + (inView ? "in-view" : "")}
+      style={{ transitionDelay: ((index % 9) * 45) + "ms" }}
+    >
+      <div
+        className="card-inner"
+        onMouseMove={handleMouseMove}
+        onMouseLeave={handleMouseLeave}
+        style={
+          {
+            "--tiltX": tilt.x + "deg",
+            "--tiltY": tilt.y + "deg",
+          } as React.CSSProperties
+        }
+      >
+        <div className="medallion">
+          <svg className="scallop" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id={gradientId} x1="10%" y1="0%" x2="90%" y2="100%">
+                <stop offset="0%" stopColor="#FCEBC0" />
+                <stop offset="35%" stopColor="#E8C077" />
+                <stop offset="70%" stopColor="#B8862E" />
+                <stop offset="100%" stopColor="#6E4A14" />
+              </linearGradient>
+            </defs>
+            <path d={SCALLOP_PATH_MEMBER} fill={"url(#" + gradientId + ")"} />
+          </svg>
+          <div className="bevel-ring" />
+          <div className="bead-rim" />
+          <div className="shine" />
+          <div className="photo-wrap">
+            {!imgFailed && member.image && (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={member.image} alt={member.name} onError={() => setImgFailed(true)} />
+            )}
+            {(imgFailed || !member.image) && <div className="initials">{member.initials}</div>}
+          </div>
+        </div>
+
+        <div className="info">
+          <h3 className="name">{member.name}</h3>
+          {member.phone && (
+            <a className="phone" href={"tel:" + member.phone.replace(/s+/g, "")}>
+              <svg viewBox="0 0 24 24">
+                <path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.5.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C10.9 21 3 13.1 3 3.1c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.2.2 2.4.6 3.5.1.4 0 .8-.2 1L6.6 10.8z" />
+              </svg>
+              {member.phone}
+            </a>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function Page() {
   return (
     <>
       <BodyClassManager className="wp-singular page-template page-template-elementor_header_footer page page-id-125 wp-custom-logo wp-embed-responsive wp-theme-hello-elementor theme-hello-elementor woocommerce-no-js hello-elementor-default elementor-default elementor-template-full-width elementor-kit-26 elementor-page elementor-page-125" />
-      
+
             <link rel="stylesheet" id="swiper-bundle-min-css" href="/css/eventin-swiper-bundle.css" media="all" />
       <link rel="stylesheet" id="etn-blocks-style-css" href="/css/eventin-etn-block-styles.css" media="all" />
       <link rel="stylesheet" id="woocommerce-layout-css" href="/css/woocommerce-woocommerce-layout.css" media="all" />
@@ -517,10 +1008,8 @@ img:is([sizes=auto i],[sizes^="auto," i]){contain-intrinsic-size:3000px 1500px}
 `
       }} />
       
-      <div 
-        dangerouslySetInnerHTML={{
-          __html: `
-<a class="skip-link screen-reader-text" href="#content">Skip to content</a>
+      <div dangerouslySetInnerHTML={{
+        __html: `<a class="skip-link screen-reader-text" href="#content">Skip to content</a>
 <header class="elementor elementor-113 elementor-location-header" data-elementor-id="113" data-elementor-post-type="elementor_library" data-elementor-type="header">
 <section class="elementor-section elementor-top-section elementor-element elementor-element-3040c7d5 elementor-section-content-middle elementor-hidden-mobile elementor-hidden-desktop elementor-hidden-tablet elementor-section-boxed elementor-section-height-default elementor-section-height-default" data-e-type="section" data-element_type="section" data-id="3040c7d5" data-settings='{"background_background":"gradient"}'>
 <div class="elementor-background-overlay"></div>
@@ -959,344 +1448,744 @@ img:is([sizes=auto i],[sizes^="auto," i]){contain-intrinsic-size:3000px 1500px}
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
 
+`
+      }} />
 
-<div class="ayurvedam-team-page">
-<div class="wrap">
-<div class="section-head">
-<span class="eyebrow">Ayurvedam Foundation</span>
-<h2>Core Organisers</h2>
-</div>
-<div class="team-grid">
-<div class="team-card">
-<div class="img-wrapper">
-<img alt="Vd. Brijesh Prajapati" decoding="async" src="/uploads/2026/06/Vd.-Brijesh.jpeg"/>
-</div>
-<h4>Vd. Brijesh Prajapati</h4>
-<div class="role">Founder</div>
-<div class="phone">📞 +91 63910 53105</div>
-</div>
-<div class="team-card">
-<div class="img-wrapper">
-<img alt="Vd. Roopesh Jauhari" decoding="async" src="/uploads/2026/06/Vd.-Roopesh-Jauhari-In-Nehru-Jacket--scaled.jpg"/>
-</div>
-<h4>Vd. Roopesh Jauhari</h4>
-<div class="role">Director</div>
-<div class="phone">📞 +91 91400 13151</div>
-</div>
-<div class="team-card">
-<div class="img-wrapper">
-<img alt="Vd. Awadh Raj Shukla" decoding="async" src="/uploads/2026/06/Vd.-Awadh-RAJ-Shukla-scaled.jpg"/>
-</div>
-<h4>Vd. Awadh Raj Shukla</h4>
-<div class="role">Director</div>
-<div class="phone">📞 +91 95804 90006</div>
-</div>
-<div class="team-card">
-<div class="img-wrapper">
-<img alt="Vd. Karan Gupta" decoding="async" src="/uploads/2026/06/vD.-kARAN-GUPTA.png"/>
-</div>
-<h4>Vd. Karan Gupta</h4>
-<div class="role">Director</div>
-<div class="phone">📞 +91 76074 96051</div>
-</div>
-<div class="team-card">
-<div class="img-wrapper">
-<img alt="Vd. Shubham Sharma" decoding="async" src="/uploads/2026/06/Vd.-Shubham-Sharma-Director-Ayurvedam-Foundation-%F0%9F%93%9E-91-9616365088.jpeg"/>
-</div>
-<h4>Vd. Shubham Sharma</h4>
-<div class="role">Director</div>
-<div class="phone">📞 +91 96163 65088</div>
-</div>
-</div>
-<div class="section-head" style="margin-top: 100px;">
-<span class="eyebrow">The Community</span>
-<h2>Co-Organisers</h2>
-</div>
-<div class="co-org-grid">
-<div class="co-org-card">
-<div class="co-org-avatar">
-<img ..="" 06="" 2026="" alt="Vd. Pooja" decoding="async" onerror="this.src=" src="/uploads/2026/06/Vait_andya-Pooja-scaled.jpeg" uploads="" vaidya-pooja-scaled.jpeg""="" wp-content=""/>
-</div>
-<div class="co-org-info">
-<div class="co-org-name">Vd. Pooja</div>
-<div class="co-org-phone">+91 8957604094</div>
-</div>
-</div>
-<div class="co-org-card">
-<div class="co-org-avatar">
-<img alt="Vd. Pratik Yadav" decoding="async" src="/uploads/2026/06/Vd.-Pratik-Yadav-%F0%9F%93%9E-91-9455741299-scaled.jpeg"/>
-</div>
-<div class="co-org-info">
-<div class="co-org-name">Vd. Pratik Yadav</div>
-<div class="co-org-phone">+91 94557 41299</div>
-</div>
-</div>
-<div class="co-org-card">
-<div class="co-org-avatar">
-<img alt="Vd. Sandhya Kailash Yadav" decoding="async" src="/uploads/2026/06/Vd.-Sandhya-Kailash-Yadav%F0%9F%93%9E-91-8726029327.jpeg"/>
-</div>
-<div class="co-org-info">
-<div class="co-org-name">Vd. Sandhya K. Yadav</div>
-<div class="co-org-phone">+91 87260 29327</div>
-</div>
-</div>
-<div class="co-org-card">
-<div class="co-org-avatar">
-<img alt="Vd. Arjun Gupta" decoding="async" src="/uploads/2026/06/Vd.-Arjun-Gupta-in-Nehru-Jacket-scaled.jpg"/>
-</div>
-<div class="co-org-info">
-<div class="co-org-name">Vd. Arjun Gupta</div>
-<div class="co-org-phone">+91 75994 67075</div>
-</div>
-</div>
-<div class="co-org-card">
-<div class="co-org-avatar">
-<img alt="Vd. Abhishek Prajapati" decoding="async" src="/uploads/2026/06/Vd.-Abhay-Singh.jpg"/>
-</div>
-<div class="co-org-info">
-<div class="co-org-name">Vd. Abhishek Prajapati</div>
-<div class="co-org-phone">+91 79067 75639</div>
-</div>
-</div>
-<div class="co-org-card">
-<div class="co-org-avatar">P</div>
-<div class="co-org-info">
-<div class="co-org-name">Vd. Payal Tiwari</div>
-<div class="co-org-phone">+91 73929 03366</div>
-</div>
-</div>
-<div class="co-org-card">
-<div class="co-org-avatar">
-<img alt="Vd. Aditi Nandal" decoding="async" src="/uploads/2026/06/Vd.-Aditi-Nandal-%F0%9F%93%9E-91-9518279058.png"/>
-</div>
-<div class="co-org-info">
-<div class="co-org-name">Vd. Aditi Nandal</div>
-<div class="co-org-phone">+91 95182 79058</div>
-</div>
-</div>
-<div class="co-org-card">
-<div class="co-org-avatar">
-<img alt="Vd. Prabhat Sharma" decoding="async" src="/uploads/2026/06/Vd.-Prabhat-Sharma-scaled.jpeg"/>
-</div>
-<div class="co-org-info">
-<div class="co-org-name">Vd. Prabhat Sharma</div>
-<div class="co-org-phone">+91 74808 77092</div>
-</div>
-</div>
-<div class="co-org-card">
-<div class="co-org-avatar">
-<img alt="Vd. Shivam Bhardwaj" decoding="async" src="/uploads/2026/06/Vd.-Shivam-Bhardwaj-%F0%9F%93%9E-91-9450133516.jpeg"/>
-</div>
-<div class="co-org-info">
-<div class="co-org-name">Vd. Shivam Bhardwaj</div>
-<div class="co-org-phone">+91 94501 33516</div>
-</div>
-</div>
-<div class="co-org-card">
-<div class="co-org-avatar">
-<img alt="Vd. Abhay Singh" decoding="async" src="/uploads/2026/06/Vd.-Abhay-Singh.jpg"/>
-</div>
-<div class="co-org-info">
-<div class="co-org-name">Vd. Abhay Singh</div>
-<div class="co-org-phone">+91 99362 26238</div>
-</div>
-</div>
-<div class="co-org-card">
-<div class="co-org-avatar">
-<img alt="Vd. Shubham Gupta" decoding="async" src="/uploads/2026/06/Vd.-Shubham-Gupta-%F0%9F%93%9E-91-9554711130.dng"/>
-</div>
-<div class="co-org-info">
-<div class="co-org-name">Vd. Shubham Gupta</div>
-<div class="co-org-phone">+91 95547 11130</div>
-</div>
-</div>
-<div class="co-org-card">
-<div class="co-org-avatar">
-<img alt="Vd. Kajal Adhikari" decoding="async" src="/uploads/2026/06/Vd.-Kajal-Adhikari-%E2%80%93-91-95609-40734.jpeg"/>
-</div>
-<div class="co-org-info">
-<div class="co-org-name">Vd. Kajal Adhikari</div>
-<div class="co-org-phone">+91 95609 40734</div>
-</div>
-</div>
-<div class="co-org-card">
-<div class="co-org-avatar">
-<img alt="Vd. Nitika Saini" decoding="async" src="/uploads/2026/06/Vd.-Nitika-Saini-%E2%80%93-91-70183-05727.jpeg"/>
-</div>
-<div class="co-org-info">
-<div class="co-org-name">Vd. Nitika Saini</div>
-<div class="co-org-phone">+91 70183 05727</div>
-</div>
-</div>
-<div class="co-org-card">
-<div class="co-org-avatar">
-<img alt="Vd. Seema Bunkar" decoding="async" src="/uploads/2026/06/Vd.-Seema-Bunkar-%E2%80%93-91-91729-6902734-scaled.jpeg"/>
-</div>
-<div class="co-org-info">
-<div class="co-org-name">Vd. Seema Bunkar</div>
-<div class="co-org-phone">+91 91729 69027</div>
-</div>
-</div>
-<div class="co-org-card">
-<div class="co-org-avatar">
-<img alt="Vd. Astha Verma" decoding="async" src="/uploads/2026/06/Vd.-Astha-Verma-91-95281-44056.jpeg"/>
-</div>
-<div class="co-org-info">
-<div class="co-org-name">Vd. Astha Verma</div>
-<div class="co-org-phone">+91 95281 44056</div>
-</div>
-</div>
-<div class="co-org-card">
-<div class="co-org-avatar">
-<img alt="Vd. Namrta Yadav" decoding="async" src="/uploads/2026/06/Vd.-Namrta-Yadav-scaled.jpg"/>
-</div>
-<div class="co-org-info">
-<div class="co-org-name">Vd. Namrta Yadav</div>
-<div class="co-org-phone">+91 70393 16989</div>
-</div>
-</div>
-<div class="co-org-card">
-<div class="co-org-avatar">
-<img alt="Vd. Shailza Sharma" decoding="async" src="/uploads/2026/06/Vd.-Shailza-Sharma-91-93063-53239.jpeg"/>
-</div>
-<div class="co-org-info">
-<div class="co-org-name">Vd. Shailza Sharma</div>
-<div class="co-org-phone">+91 93063 53239</div>
-</div>
-</div>
-<div class="co-org-card">
-<div class="co-org-avatar">
-<img alt="Vd. Anjali Garg" decoding="async" src="/uploads/2026/06/Dr.-Anjali-Garg-7814168390.png"/>
-</div>
-<div class="co-org-info">
-<div class="co-org-name">Vd. Anjali Garg</div>
-<div class="co-org-phone">+91 78141 68390</div>
-</div>
-</div>
-<div class="co-org-card">
-<div class="co-org-avatar">
-<img alt="Vd. Brijesh Patel" decoding="async" src="/uploads/2026/06/Vd.-Brajesh-Patel.png"/>
-</div>
-<div class="co-org-info">
-<div class="co-org-name">Vd. Brijesh Patel</div>
-<div class="co-org-phone">+91 62630 38442</div>
-</div>
-</div>
-<div class="co-org-card">
-<div class="co-org-avatar">
-<img alt="Vd. Harsh Bansal" decoding="async" src="/uploads/2026/06/Vd.-Harsh-Bansal-%E2%80%93-91-99270-69634.jpeg"/>
-</div>
-<div class="co-org-info">
-<div class="co-org-name">Vd. Harsh Bansal</div>
-<div class="co-org-phone">+91 99270 69634</div>
-</div>
-</div>
-<div class="co-org-card">
-<div class="co-org-avatar">
-<img alt="Vd. Apoorv Tripathi" decoding="async" src="/uploads/2026/06/Vd.-Apoorva-Tripathi-scaled.jpg"/>
-</div>
-<div class="co-org-info">
-<div class="co-org-name">Vd. Apoorv Tripathi</div>
-<div class="co-org-phone">+91 87340 13392</div>
-</div>
-</div>
-<div class="co-org-card">
-<div class="co-org-avatar">
-<img alt="Vd. Arjun Nanda" decoding="async" src="/uploads/2026/06/Vd.-Arjun-Nanda-91-84450-50131.jpeg"/>
-</div>
-<div class="co-org-info">
-<div class="co-org-name">Vd. Arjun Nanda</div>
-<div class="co-org-phone">+91 84450 50131</div>
-</div>
-</div>
-<div class="co-org-card">
-<div class="co-org-avatar">
-<img alt="Vd. Priyansh Shuwalka" decoding="async" src="/uploads/2026/06/Priyansh-Shuwalka.png"/>
-</div>
-<div class="co-org-info">
-<div class="co-org-name">Vd. Priyansh Shuwalka</div>
-<div class="co-org-phone">+91 63677 53817</div>
-</div>
-</div>
-<div class="co-org-card">
-<div class="co-org-avatar">
-<img alt="Vd. Shubham Suxena" decoding="async" src="/uploads/2026/06/Vd.-Shubham-Suxena-%E2%80%93-91-99346-23560-1.jpeg"/>
-</div>
-<div class="co-org-info">
-<div class="co-org-name">Vd. Shubham Suxena</div>
-<div class="co-org-phone">+91 99346 23560</div>
-</div>
-</div>
-<div class="co-org-card">
-<div class="co-org-avatar">
-<img alt="Vd. Saikiran" decoding="async" src="/uploads/2026/06/Vd.-Saikiran-%E2%80%93-91-93595-58503.jpeg"/>
-</div>
-<div class="co-org-info">
-<div class="co-org-name">Vd. Saikiran</div>
-<div class="co-org-phone">+91 93595 58503</div>
-</div>
-</div>
-<div class="co-org-card">
-<div class="co-org-avatar">
-<img alt="Vd. Vikrant Tripathi" decoding="async" src="/uploads/2026/06/Vd.-Vikrant-Tripathi-%E2%80%93-91-89539-20558-scaled.jpeg"/>
-</div>
-<div class="co-org-info">
-<div class="co-org-name">Vd. Vikrant Tripathi</div>
-<div class="co-org-phone">+91 89539 20558</div>
-</div>
-</div>
-<div class="co-org-card">
-<div class="co-org-avatar">
-<img alt="Vd. Vinay Bhanu Singh" decoding="async" src="/uploads/2026/06/Vd.-Vinay-Bhanu-Singh-scaled.jpg"/>
-</div>
-<div class="co-org-info">
-<div class="co-org-name">Vd. Vinay Bhanu Singh</div>
-<div class="co-org-phone">+91 94533 81438</div>
-</div>
-</div>
-<div class="co-org-card">
-<div class="co-org-avatar">
-<img alt="Vd. Vikki Kumar" decoding="async" src="/uploads/2026/06/Vd.-Vikki-Kumar-91-96286-29274.jpeg"/>
-</div>
-<div class="co-org-info">
-<div class="co-org-name">Vd. Vikki Kumar</div>
-<div class="co-org-phone">+91 96286 29274</div>
-</div>
-</div>
-<div class="co-org-card">
-<div class="co-org-avatar">
-<img alt="Vd. Aditya Singh" decoding="async" src="/uploads/2026/06/Vd.-Aditya-Singh-91-78803-18418.png"/>
-</div>
-<div class="co-org-info">
-<div class="co-org-name">Vd. Aditya Singh</div>
-<div class="co-org-phone">+91 78803 18418</div>
-</div>
-</div>
-<div class="co-org-card">
-<div class="co-org-avatar">
-<img alt="Vd. Rahul Kaushik" decoding="async" src="/uploads/2026/06/Rahul-Kaushik-9691527004-scaled.jpeg"/>
-</div>
-<div class="co-org-info">
-<div class="co-org-name">Vd. Rahul Kaushik</div>
-<div class="co-org-phone">+91 96915 27004</div>
-</div>
-</div>
-<div class="co-org-card">
-<div class="co-org-avatar">
-<img alt="Vd. Manish Kumar" decoding="async" src="/uploads/2026/06/Vd.-Manish-Kumar-Taking-Award-1-1-scaled.jpg"/>
-</div>
-<div class="co-org-info">
-<div class="co-org-name">Vd. Manish Kumar</div>
-<div class="co-org-phone">+91 62894 06425</div>
-</div>
-</div>
-</div>
-</div>
-</div> </div>
-</div>
-</div>
-</div>
-<footer class="elementor elementor-166 elementor-location-footer" data-elementor-id="166" data-elementor-post-type="elementor_library" data-elementor-type="footer">
+      <style dangerouslySetInnerHTML={{ __html: `
+  :root {
+    --bg-1: #fbeee2;
+    --bg-2: #f4dec6;
+    --card: #ffffff;
+    --card-soft: #fff8ef;
+    --gold-1: #f3d48a;
+    --gold-2: #c8963c;
+    --gold-3: #8a5e20;
+    --maroon: #6e1b3a;
+    --maroon-deep: #4a0f27;
+    --copper: #9c5a2a;
+    --pink-bg: #fbdce4;
+    --pink-icon: #c23768;
+    --ink: #3b2416;
+    --line: rgba(180, 120, 50, 0.28);
+  }
+
+  .team-page-container {
+    position: relative;
+    overflow-x: hidden;
+    width: 100%;
+    background: linear-gradient(180deg, var(--bg-1), var(--bg-2));
+    padding-bottom: 60px;
+  }
+
+  .organisers {
+    position: relative;
+    padding: 110px 24px 70px;
+    max-width: 1320px;
+    margin: 0 auto;
+    font-family: "Poppins", sans-serif;
+    color: var(--ink);
+  }
+
+  .ornament {
+    position: absolute;
+    width: 500px;
+    height: 500px;
+    opacity: 0.06;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .ornament.tl {
+    top: 2%;
+    left: -150px;
+  }
+  .ornament.tr {
+    top: 15%;
+    right: -150px;
+    transform: rotate(45deg);
+  }
+  .ornament.ml {
+    top: 40%;
+    left: -200px;
+    transform: rotate(15deg);
+  }
+  .ornament.mr {
+    top: 60%;
+    right: -200px;
+    transform: rotate(75deg);
+  }
+  .ornament.bl {
+    bottom: 15%;
+    left: -150px;
+    transform: rotate(30deg);
+  }
+  .ornament.br {
+    bottom: 2%;
+    right: -150px;
+    transform: rotate(110deg);
+  }
+
+  .header {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    margin-bottom: 78px;
+  }
+
+  .eyebrow-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    margin-bottom: 18px;
+  }
+
+  .eyebrow-row .stem {
+    width: 34px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold-2));
+  }
+  .eyebrow-row .stem.right {
+    background: linear-gradient(90deg, var(--gold-2), transparent);
+  }
+
+  .eyebrow {
+    font-weight: 700;
+    font-size: 12.5px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    background: linear-gradient(90deg, var(--gold-3), var(--gold-2) 45%, var(--gold-3));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .leaf-icon {
+    width: 16px;
+    height: 16px;
+    opacity: 0.85;
+  }
+
+  .title {
+    font-family: "Playfair Display", serif;
+    font-weight: 800;
+    font-size: clamp(38px, 5.4vw, 62px);
+    line-height: 1.05;
+    margin: 0;
+    color: var(--maroon-deep);
+  }
+
+  .title em {
+    font-style: normal;
+    background: linear-gradient(180deg, var(--gold-1), var(--gold-3));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .subtitle {
+    margin: 18px auto 0;
+    max-width: 520px;
+    font-size: 15px;
+    line-height: 1.7;
+    color: #7a5b47;
+  }
+
+  .grid {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 28px;
+  }
+
+  @media (max-width: 1180px) {
+    .grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+  @media (max-width: 760px) {
+    .grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+    }
+  }
+  @media (max-width: 480px) {
+    .grid {
+      grid-template-columns: 1fr;
+      max-width: 340px;
+      margin: 0 auto;
+    }
+  }
+
+  /* ---- card shell : shared floating effect for every card ---- */
+  .card {
+    position: relative;
+    perspective: 900px;
+    opacity: 0;
+    transform: translateY(28px);
+    transition: opacity 0.7s cubic-bezier(0.2, 0.7, 0.2, 1),
+      transform 0.7s cubic-bezier(0.2, 0.7, 0.2, 1);
+    height: 100%;
+  }
+  .card.in-view {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .card-inner {
+    position: relative;
+    background: linear-gradient(165deg, var(--card-soft) 0%, var(--card) 55%, #fffdf9 100%);
+    border-radius: 26px;
+    padding: 38px 22px 30px;
+    text-align: center;
+    border: 1px solid var(--line);
+    transform: rotateX(var(--tiltY)) rotateY(var(--tiltX)) translateZ(0);
+    transform-style: preserve-3d;
+    transition: transform 0.35s cubic-bezier(0.2, 0.7, 0.2, 1), box-shadow 0.35s ease;
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.8) inset, 0 24px 48px -20px rgba(120, 60, 15, 0.35),
+      0 10px 18px -12px rgba(120, 60, 15, 0.22);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .card-inner::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 26px;
+    padding: 1px;
+    background: linear-gradient(
+      160deg,
+      rgba(232, 183, 101, 0.55),
+      rgba(232, 183, 101, 0) 30%,
+      rgba(232, 183, 101, 0) 70%,
+      rgba(232, 183, 101, 0.4)
+    );
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+
+  .card-inner:hover {
+    transform: translateY(-12px) rotateX(var(--tiltY)) rotateY(var(--tiltX));
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.9) inset, 0 36px 60px -18px rgba(120, 60, 15, 0.42),
+      0 16px 24px -10px rgba(120, 60, 15, 0.28);
+  }
+
+  .founder-tag {
+    position: absolute;
+    top: -14px;
+    left: 50%;
+    transform: translateX(-50%) translateZ(40px);
+    background: linear-gradient(135deg, var(--gold-1), var(--gold-2) 55%, var(--gold-3));
+    color: #4a2e06;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    padding: 6px 14px;
+    border-radius: 20px;
+    box-shadow: 0 6px 14px -4px rgba(150, 100, 20, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+    white-space: nowrap;
+  }
+
+  /* ---- carved gold coin medallion : identical on every card ---- */
+  .medallion {
+    width: 148px;
+    height: 148px;
+    margin: 2px auto 24px;
+    position: relative;
+    transform: translateZ(30px);
+    filter: drop-shadow(0 16px 22px rgba(120, 68, 14, 0.42));
+  }
+
+  .scallop {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  .bevel-ring {
+    position: absolute;
+    inset: 15px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #fcebc0 0%, #e8c077 32%, #b8862e 68%, #7a5518 100%);
+    box-shadow: inset -5px -7px 11px rgba(74, 42, 6, 0.55), inset 5px 6px 10px rgba(255, 246, 223, 0.85),
+      0 2px 4px rgba(255, 255, 255, 0.4);
+  }
+
+  .bead-ring {
+    position: absolute;
+    inset: 23px;
+    border-radius: 50%;
+    border: 2px dotted rgba(255, 250, 235, 0.65);
+    box-shadow: inset 0 0 0 1px rgba(90, 55, 10, 0.35);
+    pointer-events: none;
+  }
+
+  .shine {
+    position: absolute;
+    inset: 15px;
+    border-radius: 50%;
+    background: linear-gradient(115deg, transparent 25%, rgba(255, 255, 255, 0.85) 48%, transparent 68%);
+    background-size: 260% 260%;
+    background-position: -40% -40%;
+    animation: shineSweep 5.5s ease-in-out infinite;
+    mix-blend-mode: overlay;
+    pointer-events: none;
+  }
+
+  .photo-wrap {
+    position: absolute;
+    inset: 29px;
+    border-radius: 50%;
+    overflow: hidden;
+    box-shadow: inset 0 3px 8px rgba(0, 0, 0, 0.3), 0 0 0 3px #fff8ef, 0 0 0 4px rgba(138, 94, 32, 0.35);
+    background: linear-gradient(160deg, var(--maroon), var(--copper));
+  }
+
+  .photo-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .initials {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: "Playfair Display", serif;
+    font-weight: 700;
+    font-size: 30px;
+    color: #f6e4c6;
+    letter-spacing: 1px;
+  }
+
+  .name {
+    font-family: "Playfair Display", serif;
+    font-weight: 700;
+    font-size: 17px;
+    line-height: 1.28;
+    color: var(--maroon);
+    margin: 0 0 6px;
+    transform: translateZ(24px);
+  }
+
+  .role {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2.4px;
+    text-transform: uppercase;
+    color: var(--copper);
+    margin: 0 0 18px;
+    transform: translateZ(20px);
+  }
+
+  .role::after {
+    content: "";
+    display: block;
+    width: 26px;
+    height: 2px;
+    margin: 9px auto 0;
+    background: linear-gradient(90deg, var(--gold-1), var(--gold-3));
+    border-radius: 2px;
+  }
+
+  .phone {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: linear-gradient(160deg, var(--pink-bg), #f7c9d6);
+    color: var(--maroon-deep);
+    font-weight: 600;
+    font-size: 13px;
+    padding: 10px 18px;
+    border-radius: 30px;
+    box-shadow: 0 8px 16px -8px rgba(194, 55, 104, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.7);
+    transform: translateZ(18px);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    text-decoration: none;
+    margin-top: auto;
+  }
+
+  .card-inner:hover .phone {
+    transform: translateZ(18px) translateY(-2px);
+    box-shadow: 0 12px 20px -8px rgba(194, 55, 104, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.7);
+  }
+
+  .phone svg {
+    width: 14px;
+    height: 14px;
+    fill: var(--pink-icon);
+  }
+
+  /* ---- Community Section styles ---- */
+  .community {
+    position: relative;
+    padding: 70px 24px 110px;
+    max-width: 1320px;
+    margin: 0 auto;
+    font-family: "Poppins", sans-serif;
+    color: var(--ink);
+    background: transparent;
+  }
+
+  .community .header {
+    text-align: center;
+    margin-bottom: 52px;
+  }
+
+  .community .eyebrow-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    margin-bottom: 14px;
+  }
+  .community .eyebrow-row .stem {
+    width: 34px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold-2));
+  }
+  .community .eyebrow-row .stem.right {
+    background: linear-gradient(90deg, var(--gold-2), transparent);
+  }
+  .community .eyebrow {
+    font-weight: 700;
+    font-size: 12px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    background: linear-gradient(90deg, var(--gold-3), var(--gold-2) 45%, var(--gold-3));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .community .title {
+    font-family: "Playfair Display", serif;
+    font-weight: 800;
+    font-size: clamp(30px, 4vw, 44px);
+    margin: 0;
+    color: var(--maroon-deep);
+  }
+
+  .community .grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 22px;
+  }
+
+  @media (max-width: 920px) {
+    .community .grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  @media (max-width: 560px) {
+    .community .grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* ---- community card overrides ---- */
+  .community .card {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s cubic-bezier(0.2, 0.7, 0.2, 1), transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1);
+    height: 100%;
+  }
+  .community .card.in-view {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .community .card-inner {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    background: linear-gradient(165deg, var(--card-soft) 0%, var(--card) 55%, #fffdf9 100%);
+    border-radius: 20px;
+    padding: 16px 20px;
+    border: 1px solid var(--line);
+    position: relative;
+    perspective: 700px;
+    transform: rotateX(var(--tiltY)) rotateY(var(--tiltX)) translateZ(0);
+    transform-style: preserve-3d;
+    transition: transform 0.3s cubic-bezier(0.2, 0.7, 0.2, 1), box-shadow 0.3s ease;
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.8) inset, 0 16px 32px -18px rgba(120, 60, 15, 0.32),
+      0 6px 12px -8px rgba(120, 60, 15, 0.2);
+    height: 100%;
+  }
+
+  .community .card-inner::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 20px;
+    padding: 1px;
+    background: linear-gradient(
+      160deg,
+      rgba(232, 183, 101, 0.5),
+      rgba(232, 183, 101, 0) 30%,
+      rgba(232, 183, 101, 0) 70%,
+      rgba(232, 183, 101, 0.35)
+    );
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+
+  .community .card-inner:hover {
+    transform: translateY(-6px) rotateX(var(--tiltY)) rotateY(var(--tiltX));
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.9) inset, 0 24px 40px -16px rgba(120, 60, 15, 0.38),
+      0 10px 16px -8px rgba(120, 60, 15, 0.24);
+  }
+
+  .community .medallion {
+    width: 68px;
+    height: 68px;
+    flex: 0 0 auto;
+    position: relative;
+    transform: translateZ(24px);
+    filter: drop-shadow(0 8px 12px rgba(120, 68, 14, 0.4));
+    margin: 0 !important;
+  }
+
+  .community .bevel-ring {
+    position: absolute;
+    inset: 7px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #fcebc0 0%, #e8c077 32%, #b8862e 68%, #7a5518 100%);
+    box-shadow: inset -3px -4px 7px rgba(74, 42, 6, 0.55), inset 3px 3px 6px rgba(255, 246, 223, 0.85);
+  }
+
+  .community .bead-rim {
+    position: absolute;
+    inset: 11px;
+    border-radius: 50%;
+    border: 1.5px dotted rgba(255, 250, 235, 0.65);
+    box-shadow: inset 0 0 0 1px rgba(90, 55, 10, 0.35);
+    pointer-events: none;
+  }
+
+  .community .shine {
+    position: absolute;
+    inset: 7px;
+    border-radius: 50%;
+    background: linear-gradient(115deg, transparent 25%, rgba(255, 255, 255, 0.85) 48%, transparent 68%);
+    background-size: 260% 260%;
+    background-position: -40% -40%;
+    animation: shineSweep 5.5s ease-in-out infinite;
+    mix-blend-mode: overlay;
+    pointer-events: none;
+  }
+
+  .community .photo-wrap {
+    position: absolute;
+    inset: 13px;
+    border-radius: 50%;
+    overflow: hidden;
+    box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.3), 0 0 0 2px #fff8ef, 0 0 0 3px rgba(138, 94, 32, 0.35);
+    background: linear-gradient(160deg, var(--maroon), var(--copper));
+  }
+
+  .community .initials {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: "Playfair Display", serif;
+    font-weight: 700;
+    font-size: 15px;
+    color: #f6e4c6;
+  }
+
+  .community .info {
+    text-align: left;
+    min-width: 0;
+    transform: translateZ(18px);
+    flex: 1 1 auto;
+  }
+
+  .community .name {
+    font-family: "Playfair Display", serif;
+    font-weight: 700;
+    font-size: 14px;
+    line-height: 1.3;
+    color: var(--maroon);
+    margin: 0 0 6px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .community .phone {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 600;
+    font-size: 12px;
+    color: var(--copper);
+    text-decoration: none;
+  }
+
+  .community .phone svg {
+    width: 12px;
+    height: 12px;
+    fill: var(--pink-icon);
+    flex: 0 0 auto;
+  }
+
+  @keyframes shineSweep {
+    0% {
+      background-position: -40% -40%;
+    }
+    45% {
+      background-position: 130% 130%;
+    }
+    100% {
+      background-position: 130% 130%;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .card,
+    .card-inner {
+      transition-duration: 0.001ms !important;
+      transform: none !important;
+    }
+    .shine {
+      animation: none;
+    }
+  }
+` }} />
+
+      <div className="team-page-container">
+        {/* Background mandala patterns */}
+        <svg className="ornament tl" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <g stroke="#8A5E20" strokeWidth="1">
+            <circle cx="100" cy="100" r="90" />
+            <circle cx="100" cy="100" r="70" />
+            <path d="M100 10 C130 40 130 60 100 100 C70 60 70 40 100 10Z" />
+            <path d="M100 190 C130 160 130 140 100 100 C70 140 70 160 100 190Z" />
+            <path d="M10 100 C40 70 60 70 100 100 C60 130 40 130 10 100Z" />
+            <path d="M190 100 C160 70 140 70 100 100 C140 130 160 130 190 100Z" />
+          </g>
+        </svg>
+        <svg className="ornament tr" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <g stroke="#8A5E20" strokeWidth="1">
+            <circle cx="100" cy="100" r="90" />
+            <circle cx="100" cy="100" r="70" />
+            <path d="M100 10 C130 40 130 60 100 100 C70 60 70 40 100 10Z" />
+            <path d="M100 190 C130 160 130 140 100 100 C70 140 70 160 100 190Z" />
+            <path d="M10 100 C40 70 60 70 100 100 C60 130 40 130 10 100Z" />
+            <path d="M190 100 C160 70 140 70 100 100 C140 130 160 130 190 100Z" />
+          </g>
+        </svg>
+        <svg className="ornament ml" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <g stroke="#8A5E20" strokeWidth="1">
+            <circle cx="100" cy="100" r="90" />
+            <circle cx="100" cy="100" r="70" />
+            <path d="M100 10 C130 40 130 60 100 100 C70 60 70 40 100 10Z" />
+            <path d="M100 190 C130 160 130 140 100 100 C70 140 70 160 100 190Z" />
+            <path d="M10 100 C40 70 60 70 100 100 C60 130 40 130 10 100Z" />
+            <path d="M190 100 C160 70 140 70 100 100 C140 130 160 130 190 100Z" />
+          </g>
+        </svg>
+        <svg className="ornament mr" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <g stroke="#8A5E20" strokeWidth="1">
+            <circle cx="100" cy="100" r="90" />
+            <circle cx="100" cy="100" r="70" />
+            <path d="M100 10 C130 40 130 60 100 100 C70 60 70 40 100 10Z" />
+            <path d="M100 190 C130 160 130 140 100 100 C70 140 70 160 100 190Z" />
+            <path d="M10 100 C40 70 60 70 100 100 C60 130 40 130 10 100Z" />
+            <path d="M190 100 C160 70 140 70 100 100 C140 130 160 130 190 100Z" />
+          </g>
+        </svg>
+        <svg className="ornament bl" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <g stroke="#8A5E20" strokeWidth="1">
+            <circle cx="100" cy="100" r="90" />
+            <circle cx="100" cy="100" r="70" />
+            <path d="M100 10 C130 40 130 60 100 100 C70 60 70 40 100 10Z" />
+            <path d="M100 190 C130 160 130 140 100 100 C70 140 70 160 100 190Z" />
+            <path d="M10 100 C40 70 60 70 100 100 C60 130 40 130 10 100Z" />
+            <path d="M190 100 C160 70 140 70 100 100 C140 130 160 130 190 100Z" />
+          </g>
+        </svg>
+        <svg className="ornament br" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <g stroke="#8A5E20" strokeWidth="1">
+            <circle cx="100" cy="100" r="90" />
+            <circle cx="100" cy="100" r="70" />
+            <path d="M100 10 C130 40 130 60 100 100 C70 60 70 40 100 10Z" />
+            <path d="M100 190 C130 160 130 140 100 100 C70 140 70 160 100 190Z" />
+            <path d="M10 100 C40 70 60 70 100 100 C60 130 40 130 10 100Z" />
+            <path d="M190 100 C160 70 140 70 100 100 C140 130 160 130 190 100Z" />
+          </g>
+        </svg>
+
+        <section className="organisers">
+          <div className="header">
+            <div className="eyebrow-row">
+              <span className="stem" />
+              <svg className="leaf-icon" viewBox="0 0 24 24" fill="none">
+                <path d="M4 20C4 10 12 4 20 4C20 12 14 20 4 20Z" fill="#C8963C" />
+                <path d="M4 20C8 16 12 12 20 4" stroke="#8A5E20" strokeWidth="1" />
+              </svg>
+              <span className="eyebrow">Ayurvedam Foundation</span>
+              <svg className="leaf-icon" viewBox="0 0 24 24" fill="none">
+                <path d="M4 20C4 10 12 4 20 4C20 12 14 20 4 20Z" fill="#C8963C" />
+                <path d="M4 20C8 16 12 12 20 4" stroke="#8A5E20" strokeWidth="1" />
+              </svg>
+              <span className="stem right" />
+            </div>
+            <h1 className="title">
+              Core <em>Organisers</em>
+            </h1>
+            <p className="subtitle">
+              The physicians and directors steering Ayurvedam Foundation&apos;s mission — reach out to any member directly.
+            </p>
+          </div>
+
+          <div className="grid">
+            {ORGANISERS.map((organiser, index) => (
+              <OrganiserCard
+                key={organiser.id}
+                organiser={organiser}
+                gradientId={"goldEdge-" + organiser.id}
+                index={index}
+              />
+            ))}
+          </div>
+        </section>
+
+        <section className="community">
+          <div className="header">
+            <div className="eyebrow-row">
+              <span className="stem" />
+              <span className="eyebrow">Ayurvedam Foundation</span>
+              <span className="stem right" />
+            </div>
+            <h2 className="title">Community Members</h2>
+          </div>
+
+          <div className="grid">
+            {MEMBERS.map((member, index) => (
+              <MemberCard key={member.id} member={member} gradientId={"memberGold-" + member.id} index={index} />
+            ))}
+          </div>
+        </section>
+      </div>
+
+      <div dangerouslySetInnerHTML={{
+        __html: `<footer class="elementor elementor-166 elementor-location-footer" data-elementor-id="166" data-elementor-post-type="elementor_library" data-elementor-type="footer">
 <footer class="elementor-section elementor-top-section elementor-element elementor-element-8dba296 elementor-section-boxed elementor-section-height-default elementor-section-height-default" data-e-type="section" data-element_type="section" data-id="8dba296" data-settings='{"background_background":"classic"}'>
 <div class="elementor-background-overlay"></div>
 <div class="elementor-container elementor-column-gap-no">
@@ -1472,8 +2361,8 @@ img:is([sizes=auto i],[sizes^="auto," i]){contain-intrinsic-size:3000px 1500px}
 </div>
 </div>
 </section>
-</footer>`
+</footer>\``
       }} />
-                                                                                                                      </>
+    </>
   );
 }

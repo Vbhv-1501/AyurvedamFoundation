@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
-import { useAnimate } from "framer-motion";
+import React, { useEffect, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 
 // Target event date: Dec 23, 2026 at 09:00:00
 const COUNTDOWN_FROM = "2026-12-23T09:00:00";
@@ -18,7 +18,7 @@ interface CountdownItemProps {
 
 export default function ShiftingCountdown() {
   return (
-    <section className="relative w-full bg-gradient-to-r from-[#4E0E25] via-[#7A1B3D] to-[#4E0E25] text-white border-y border-[#C98A2A]/30 py-6 px-4 shadow-lg overflow-hidden">
+    <section className="relative w-full bg-gradient-to-r from-[#4E0E25] via-[#7A1B3D] to-[#4E0E25] text-white border-y border-[#C98A2A]/30 py-6 px-4 shadow-lg overflow-hidden select-none">
       {/* Decorative background overlay */}
       <div className="absolute inset-0 opacity-10 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-white via-transparent to-transparent pointer-events-none" />
       
@@ -47,19 +47,30 @@ export default function ShiftingCountdown() {
 }
 
 function CountdownItem({ unit, label }: CountdownItemProps) {
-  const { ref, time } = useTimer(unit);
+  const { time } = useTimer(unit);
   // Ensure double digits
   const display = String(time).padStart(2, '0');
 
   return (
     <div className="flex flex-col items-center justify-center min-w-[70px] md:min-w-[90px] px-2 py-3">
-      <div className="relative w-full overflow-hidden text-center h-[36px] md:h-[48px]">
-        <span
-          ref={ref}
-          className="block text-2xl md:text-4xl font-mono font-bold text-[#F2C572]"
-        >
-          {display}
-        </span>
+      <div className="relative w-full overflow-hidden text-center h-[36px] md:h-[48px] flex items-center justify-center">
+        <AnimatePresence mode="popLayout" initial={false}>
+          <motion.span
+            key={display}
+            initial={{ y: 24, opacity: 0, filter: "blur(4px)" }}
+            animate={{ y: 0, opacity: 1, filter: "blur(0px)" }}
+            exit={{ y: -24, opacity: 0, filter: "blur(4px)" }}
+            transition={{
+              type: "spring",
+              stiffness: 150,
+              damping: 15,
+              mass: 0.8
+            }}
+            className="absolute block text-2xl md:text-4xl font-mono font-bold text-[#F2C572]"
+          >
+            {display}
+          </motion.span>
+        </AnimatePresence>
       </div>
       <span className="text-[10px] md:text-xs uppercase tracking-widest text-[#cfe0d8]/80 font-medium mt-1">
         {label}
@@ -69,60 +80,35 @@ function CountdownItem({ unit, label }: CountdownItemProps) {
 }
 
 function useTimer(unit: CountdownItemProps["unit"]) {
-  const [ref, animate] = useAnimate();
-  const intervalRef = useRef<any>(null);
-  const timeRef = useRef<number>(0);
   const [time, setTime] = useState<number>(0);
 
   useEffect(() => {
-    handleCountdown();
-    intervalRef.current = setInterval(handleCountdown, 1000);
-    return () => clearInterval(intervalRef.current);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    const handleCountdown = () => {
+      const end = new Date(COUNTDOWN_FROM).getTime();
+      const now = new Date().getTime();
+      const distance = end - now;
 
-  const handleCountdown = async () => {
-    const end = new Date(COUNTDOWN_FROM).getTime();
-    const now = new Date().getTime();
-    const distance = end - now;
-
-    let newTime = 0;
-    switch (unit) {
-      case "Day":
-        newTime = Math.max(0, Math.floor(distance / DAY));
-        break;
-      case "Hour":
-        newTime = Math.max(0, Math.floor((distance % DAY) / HOUR));
-        break;
-      case "Minute":
-        newTime = Math.max(0, Math.floor((distance % HOUR) / MINUTE));
-        break;
-      default:
-        newTime = Math.max(0, Math.floor((distance % MINUTE) / SECOND));
-    }
-
-    if (newTime !== timeRef.current) {
-      // Don't animate on mount
-      if (timeRef.current !== 0 || time !== 0) {
-        await animate(
-          ref.current,
-          { y: ["0%", "-50%"], opacity: [1, 0] },
-          { duration: 0.2 }
-        );
+      let newTime = 0;
+      switch (unit) {
+        case "Day":
+          newTime = Math.max(0, Math.floor(distance / DAY));
+          break;
+        case "Hour":
+          newTime = Math.max(0, Math.floor((distance % DAY) / HOUR));
+          break;
+        case "Minute":
+          newTime = Math.max(0, Math.floor((distance % HOUR) / MINUTE));
+          break;
+        default:
+          newTime = Math.max(0, Math.floor((distance % MINUTE) / SECOND));
       }
-
-      timeRef.current = newTime;
       setTime(newTime);
+    };
 
-      if (ref.current) {
-        await animate(
-          ref.current,
-          { y: ["50%", "0%"], opacity: [0, 1] },
-          { duration: 0.2 }
-        );
-      }
-    }
-  };
+    handleCountdown();
+    const interval = setInterval(handleCountdown, 1000);
+    return () => clearInterval(interval);
+  }, [unit]);
 
-  return { ref, time };
+  return { time };
 }
